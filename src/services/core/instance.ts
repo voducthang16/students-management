@@ -1,9 +1,9 @@
-import axios from "axios";
+import axios from 'axios';
 
 const instance = axios.create({
-    baseURL: "https://dummyjson.com/",
+    baseURL: 'https://6400042d29deaba5cb2e6d91.mockapi.io/',
     headers: {
-        value: 'test123'
+        value: 'test123',
     },
     // timeout: 1000
 });
@@ -15,9 +15,9 @@ instance.interceptors.request.use(
     },
     function (error) {
         // Do something with request error
-        
+
         return Promise.reject(error);
-    }
+    },
 );
 
 // Add a response interceptor
@@ -28,22 +28,22 @@ instance.interceptors.response.use(
         return response;
     },
     function (error) {
-        console.log(error)
-        if (error.response && error.response.status === 404) {
-            // handle error: inform user, go to login, etc
-            return {
-                code: error.code,
-                status: error.response.status,
-                message: error.message,
-                // data: error.response.data
-            }
-        } else if (error.code === 'ERR_NETWORK') {
-            alert('Network Error')
-        }
+        console.log(error);
+        // if (error.response && error.response.status === 404) {
+        //     // handle error: inform user, go to login, etc
+        //     return {
+        //         code: error.code,
+        //         status: error.response.status,
+        //         message: error.message,
+        //         // data: error.response.data
+        //     };
+        // } else if (error.code === 'ERR_NETWORK') {
+        //     alert('Network Error');
+        // }
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response error
         return Promise.reject(error);
-    }
+    },
 );
 
 export default instance;
