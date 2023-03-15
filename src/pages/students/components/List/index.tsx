@@ -9,7 +9,7 @@ function List() {
     useEffect(() => {
         dispatch(
             getListStudentsAsync({
-                page: 1,
+                page: 6,
                 limit: 10,
             }),
         );
@@ -37,6 +37,9 @@ function List() {
                         Age
                     </th>
                     <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
+                        Hobbies
+                    </th>
+                    <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
                         Sex
                     </th>
                     <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
@@ -62,6 +65,7 @@ function List() {
                             age={item.age}
                             avatar={item.avatar}
                             email={item.email}
+                            hobbies={item.hobbies}
                             sex={item.sex}
                             math={item.math}
                             physic={item.physic}

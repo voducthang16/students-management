@@ -4,6 +4,7 @@ export interface IStudent {
     avatar: string;
     email: string;
     age: number;
+    hobbies: string[];
     sex: string;
     math: string;
     physic: string;
