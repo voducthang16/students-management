@@ -229,22 +229,15 @@ const Create: React.FC<CreateProps> = ({ open, onCreate, onCancel }) => {
                         <Input type="text" className="w-full" min={0} max={10} />
                     </Form.Item>
                 </div>
-                <Form.Item name="sex" label="Sex" valuePropName="checked">
-                    {/* <Radio.Group>
-                        <Radio value="male">Male</Radio>
-                        <Radio value="female">Female</Radio>
-                    </Radio.Group> */}
+                <Form.Item name="sex" label="Sex" valuePropName="checked" initialValue>
                     <Switch className="bg" checkedChildren="Male" unCheckedChildren="Female" defaultChecked />
                 </Form.Item>
                 <Form.Item name="hobbies" label="Hobbies">
                     <Select
                         mode="tags"
                         style={{ width: '100%' }}
-                        placeholder="Please select gender"
-                        // onChange={handleChange}
+                        placeholder="Please select hobbies"
                         options={options}
-                        // placement="topLeft"
-                        // listHeight={100}
                     />
                 </Form.Item>
             </Form>

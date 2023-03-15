@@ -3,15 +3,26 @@ import { useState } from 'react';
 import { List, Create, Search } from './components';
 import { studentsService } from 'src/services/features';
 import { IStudent } from 'src/models/students.model';
+import { notify } from 'src/utils/Notification';
 function Students() {
     const [open, setOpen] = useState(false);
 
     const onCreate = (values: IStudent) => {
+        const valueRequest = {
+            ...values,
+            sex: values.sex ? 'male' : 'female',
+        };
         studentsService
             .create({
-                payload: values,
+                payload: valueRequest,
             })
-            .then((res) => console.log(res));
+            .then(() =>
+                notify.success({
+                    message: 'Success',
+                    description: 'Created Student Success',
+                    duration: 5,
+                }),
+            );
         setOpen(false);
     };
     return (
