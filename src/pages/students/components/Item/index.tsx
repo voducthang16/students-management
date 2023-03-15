@@ -1,23 +1,34 @@
 import Image from '~components/Image';
 import { IStudent } from 'src/models/students.model';
-function Item({ name, age, avatar, chemical, email, math, physic, sex }: IStudent) {
+import dayjs from 'dayjs';
+
+function Item({ name, age, avatar, chemical, email, math, physic, sex, createdAt, updatedAt }: IStudent) {
     return (
-        <tr className="border-b">
-            <th scope="row" className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">
+        <tr>
+            <th
+                scope="row"
+                className="px-4 py-3 border border-solid border-gray-300 font-medium font-raleway text-gray-900 whitespace-nowrap"
+            >
                 {name}
             </th>
-            <td className="py-4">
-                <Image src={avatar} alt={name} className={'rounded-full h-20 w-20 p-2'} />
+            <td className="py-4 border border-solid border-gray-300 text-center">
+                <Image
+                    src={avatar}
+                    alt={name}
+                    className={'rounded-full h-14 w-14 p-0.5 border border-solid border-slate-200'}
+                />
             </td>
-            <td className="px-4 py-3">{email}</td>
-            <td className="px-4 py-3">{age}</td>
-            <td className="px-4 py-3">{sex}</td>
-            <td className="px-4 py-3">
-                <h6>Math: {math}</h6>
-                <h6>Physic: {physic}</h6>
-                <h6>Chemical: {chemical}</h6>
+            <td className="px-4 py-3 border border-solid border-gray-300">{email.toLocaleLowerCase()}</td>
+            <td className="px-4 py-3 border border-solid border-gray-300">{age}</td>
+            <td className="px-4 py-3 border border-solid border-gray-300">{sex}</td>
+            <td className="px-4 py-3 border border-solid border-gray-300 font-source-sans-pro">
+                <h6 className="text-sm font-normal">Math: {math}</h6>
+                <h6 className="text-sm font-normal">Physic: {physic}</h6>
+                <h6 className="text-sm font-normal">Chemical: {chemical}</h6>
             </td>
-            <td className="px-4 py-3">
+            <td className="px-4 py-3 border border-solid border-gray-300">{dayjs(createdAt).format('DD-MM-YYYY')}</td>
+            <td className="px-4 py-3 border border-solid border-gray-300">{dayjs(updatedAt).format('DD-MM-YYYY')}</td>
+            <td className="px-4 py-3 border border-solid border-gray-300">
                 <button
                     id="apple-imac-27-dropdown-button"
                     data-dropdown-toggle="apple-imac-27-dropdown"

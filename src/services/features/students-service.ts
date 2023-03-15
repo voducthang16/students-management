@@ -2,9 +2,9 @@ import httpRequest from '../core/httpRequest';
 import { IStudent } from 'src/models/students.model';
 import { IHttpRequest } from 'src/models';
 export const studentsService = {
-    getAll() {
+    getAll({ url }: IHttpRequest) {
         return httpRequest.get<IStudent[]>({
-            url: '/students',
+            url: `students${url}`,
         });
     },
     create({ payload, headers }: IHttpRequest<IStudent>) {

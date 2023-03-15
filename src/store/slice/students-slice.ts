@@ -7,8 +7,15 @@ const initialState: IStudentList = {
     list: [],
 };
 
-export const getListStudentsAsync = createAsyncThunk('students/getLists', async () => {
-    const response = await studentsService.getAll();
+interface IPagination {
+    page: number;
+    limit: number;
+}
+
+export const getListStudentsAsync = createAsyncThunk('students/getLists', async ({ page, limit }: IPagination) => {
+    const response = await studentsService.getAll({
+        url: `?page=${page}&limit=${limit}`,
+    });
     return response.data;
 });
 

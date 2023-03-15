@@ -17,6 +17,13 @@ module.exports = {
                     900: '#1e3a8a',
                 },
             },
+            fontFamily: {
+                'source-sans-pro': ['Source Sans Pro', 'sans-serif'],
+                'open-sans': ['Open Sans', 'sans-serif'],
+                raleway: ['Raleway', 'sans-serif'],
+                roboto: ['Roboto', 'sans-serif'],
+                poppins: ['Poppins', 'sans-serif'],
+            },
         },
     },
     plugins: [],

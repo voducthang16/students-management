@@ -16,16 +16,16 @@ function Students() {
     };
     return (
         <div>
-            <section className="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
+            <section className="bg-gray-50 p-3 sm:p-5">
                 <div className="mx-auto container">
-                    <div className="bg-white dark:bg-gray-800 relative sm:rounded-lg overflow-hidden">
+                    <div className="bg-white relative overflow-hidden">
                         <div className="flex items-center justify-between p-4">
                             <div className="w-1/2">
                                 <Search />
                             </div>
                             <div className="w-1/2 flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
                                 <Button
-                                    className="!bg-[#1677ff]"
+                                    className=""
                                     type="primary"
                                     onClick={() => {
                                         setOpen(true);
@@ -40,7 +40,7 @@ function Students() {
                                         setOpen(false);
                                     }}
                                 />
-                                <div className="flex items-center space-x-3 w-full md:w-auto">
+                                {/* <div className="flex items-center space-x-3 w-full md:w-auto">
                                     <button
                                         id="actionsDropdownButton"
                                         data-dropdown-toggle="actionsDropdown"
@@ -202,7 +202,7 @@ function Students() {
                                             </li>
                                         </ul>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         <div className="overflow-x-auto">
