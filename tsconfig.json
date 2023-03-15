@@ -19,7 +19,8 @@
         "paths": {
             "~components/*": ["src/components/*"],
             "~store/*": ["src/store/*"]
-        }
+        },
+        "noImplicitAny": false
     },
     "include": ["src"],
     "references": [{ "path": "./tsconfig.node.json" }]

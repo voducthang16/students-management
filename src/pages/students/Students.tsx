@@ -1,9 +1,24 @@
+import { Button } from 'antd';
+import { useState } from 'react';
 import List from './components/List';
+import Search from './components/Create';
+import { studentsService } from 'src/services/features';
+import { IStudent } from 'src/models/students.model';
 function Students() {
+    const [open, setOpen] = useState(false);
+
+    const onCreate = (values: IStudent) => {
+        studentsService
+            .create({
+                payload: values,
+            })
+            .then((res) => console.log(res));
+        setOpen(false);
+    };
     return (
         <div>
             <section className="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
-                <div className="mx-auto container px-4 lg:px-12">
+                <div className="mx-auto container">
                     <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
                         <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                             <div className="w-full md:w-1/2">
@@ -36,26 +51,23 @@ function Students() {
                                     </div>
                                 </form>
                             </div>
-                            {/* <div className="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-                                <button
-                                    type="button"
-                                    className="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                            <div className="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
+                                <Button
+                                    className="!bg-[#1677ff]"
+                                    type="primary"
+                                    onClick={() => {
+                                        setOpen(true);
+                                    }}
                                 >
-                                    <svg
-                                        className="h-3.5 w-3.5 mr-2"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        aria-hidden="true"
-                                    >
-                                        <path
-                                            clipRule="evenodd"
-                                            fillRule="evenodd"
-                                            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                                        />
-                                    </svg>
-                                    Add product
-                                </button>
+                                    Add Student
+                                </Button>
+                                <Search
+                                    open={open}
+                                    onCreate={onCreate}
+                                    onCancel={() => {
+                                        setOpen(false);
+                                    }}
+                                />
                                 <div className="flex items-center space-x-3 w-full md:w-auto">
                                     <button
                                         id="actionsDropdownButton"
@@ -219,7 +231,7 @@ function Students() {
                                         </ul>
                                     </div>
                                 </div>
-                            </div> */}
+                            </div>
                         </div>
                         <div className="overflow-x-auto">
                             <List />

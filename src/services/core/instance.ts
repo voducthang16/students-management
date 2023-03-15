@@ -3,7 +3,7 @@ import axios from 'axios';
 const instance = axios.create({
     baseURL: 'https://6400042d29deaba5cb2e6d91.mockapi.io/',
     headers: {
-        value: 'test123',
+        'content-type': 'application/json',
     },
     // timeout: 1000
 });
