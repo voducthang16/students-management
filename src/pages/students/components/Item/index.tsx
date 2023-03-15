@@ -1,4 +1,5 @@
-import Image from '~components/Image';
+// import Image from '~components/Image';
+import { Image } from 'antd';
 import { IStudent } from 'src/models/students.model';
 import dayjs from 'dayjs';
 
@@ -15,7 +16,8 @@ function Item({ name, age, avatar, chemical, email, math, physic, sex, createdAt
                 <Image
                     src={avatar}
                     alt={name}
-                    className={'rounded-full h-14 w-14 p-0.5 border border-solid border-slate-200'}
+                    className={'rounded-full'}
+                    rootClassName={'rounded-full h-14 w-14 p-0.5 border border-solid border-slate-200'}
                 />
             </td>
             <td className="px-4 py-3 border border-solid border-gray-300">{email.toLocaleLowerCase()}</td>
