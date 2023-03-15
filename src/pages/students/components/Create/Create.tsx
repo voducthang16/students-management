@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { Button, Form, Input, Modal, Radio, InputNumber, Switch, Select } from 'antd';
 import type { SelectProps } from 'antd';
 import { IStudent } from 'src/models/students.model';
+import { studentsService } from 'src/services/features';
+import { notify } from 'src/utils/Notify';
 
 interface CreateProps {
     open: boolean;
-    onCreate: (values: IStudent) => void;
+    toggleModal: () => void;
     onCancel: () => void;
 }
 
-const Create: React.FC<CreateProps> = ({ open, onCreate, onCancel }) => {
+function Create({ open, toggleModal, onCancel }: CreateProps) {
     const [form] = Form.useForm();
 
     const checkAge = (rule, value: string) => {
@@ -88,6 +90,24 @@ const Create: React.FC<CreateProps> = ({ open, onCreate, onCancel }) => {
         }
     };
 
+    const onFormSubmit = (values: IStudent) => {
+        const valueRequest = {
+            ...values,
+            sex: values.sex ? 'male' : 'female',
+        };
+        studentsService
+            .create({
+                payload: valueRequest,
+            })
+            .then(() =>
+                notify.success({
+                    message: 'Success',
+                    description: 'Created Student Success',
+                    duration: 3,
+                }),
+            );
+    };
+
     return (
         <Modal
             open={open}
@@ -99,7 +119,8 @@ const Create: React.FC<CreateProps> = ({ open, onCreate, onCancel }) => {
                 form.validateFields()
                     .then((values) => {
                         form.resetFields();
-                        onCreate(values);
+                        onFormSubmit(values);
+                        toggleModal();
                     })
                     .catch((info) => {
                         console.log('Validate Failed:', info);
@@ -243,6 +264,6 @@ const Create: React.FC<CreateProps> = ({ open, onCreate, onCancel }) => {
             </Form>
         </Modal>
     );
-};
+}
 
 export default Create;

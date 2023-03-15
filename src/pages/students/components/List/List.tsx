@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
-import { notify } from 'src/utils/Notification';
 import { getListStudentsAsync, listStudents } from '~store/slice/students-slice';
 import Item from '../Item';
 function List() {
@@ -13,12 +12,6 @@ function List() {
                 limit: 10,
             }),
         );
-        // test notification
-        // notify.warning({
-        //     message: 'test',
-        //     description: 'desc',
-        //     duration: 2,
-        // });
     }, []);
     return (
         <table className="w-full text-sm text-left text-gray-500 border-collapse">

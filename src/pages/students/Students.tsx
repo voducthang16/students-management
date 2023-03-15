@@ -1,57 +1,38 @@
 import { Button } from 'antd';
 import { useState } from 'react';
 import { List, Create, Search } from './components';
-import { studentsService } from 'src/services/features';
-import { IStudent } from 'src/models/students.model';
-import { notify } from 'src/utils/Notification';
 function Students() {
     const [open, setOpen] = useState(false);
 
-    const onCreate = (values: IStudent) => {
-        const valueRequest = {
-            ...values,
-            sex: values.sex ? 'male' : 'female',
-        };
-        studentsService
-            .create({
-                payload: valueRequest,
-            })
-            .then(() =>
-                notify.success({
-                    message: 'Success',
-                    description: 'Created Student Success',
-                    duration: 5,
-                }),
-            );
+    const toggleModal = () => {
         setOpen(false);
     };
     return (
-        <div>
-            <section className="bg-gray-50 p-3 sm:p-5">
-                <div className="mx-auto container">
-                    <div className="bg-white relative overflow-hidden">
-                        <div className="flex items-center justify-between p-4">
-                            <div className="w-1/2">
-                                <Search />
-                            </div>
-                            <div className="w-1/2 flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-                                <Button
-                                    className=""
-                                    type="primary"
-                                    onClick={() => {
-                                        setOpen(true);
-                                    }}
-                                >
-                                    Add Student
-                                </Button>
-                                <Create
-                                    open={open}
-                                    onCreate={onCreate}
-                                    onCancel={() => {
-                                        setOpen(false);
-                                    }}
-                                />
-                                {/* <div className="flex items-center space-x-3 w-full md:w-auto">
+        <section className="bg-gray-50 p-3 sm:p-5">
+            <div className="mx-auto container">
+                <div className="bg-white relative overflow-hidden">
+                    <div className="flex items-center justify-between p-4">
+                        <div className="w-1/2">
+                            <Search />
+                        </div>
+                        <div className="w-1/2 flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
+                            <Button
+                                className=""
+                                type="primary"
+                                onClick={() => {
+                                    setOpen(true);
+                                }}
+                            >
+                                Add Student
+                            </Button>
+                            <Create
+                                open={open}
+                                toggleModal={toggleModal}
+                                onCancel={() => {
+                                    setOpen(false);
+                                }}
+                            />
+                            {/* <div className="flex items-center space-x-3 w-full md:w-auto">
                                     <button
                                         id="actionsDropdownButton"
                                         data-dropdown-toggle="actionsDropdown"
@@ -214,12 +195,12 @@ function Students() {
                                         </ul>
                                     </div>
                                 </div> */}
-                            </div>
                         </div>
-                        <div className="overflow-x-auto">
-                            <List />
-                        </div>
-                        {/* <nav
+                    </div>
+                    <div className="overflow-x-auto">
+                        <List />
+                    </div>
+                    {/* <nav
                             className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
                             aria-label="Table navigation"
                         >
@@ -315,10 +296,9 @@ function Students() {
                                 </li>
                             </ul>
                         </nav> */}
-                    </div>
                 </div>
-            </section>
-        </div>
+            </div>
+        </section>
     );
 }
 
