@@ -90,7 +90,6 @@ const Create: React.FC<CreateProps> = ({ open, onCreate, onCancel }) => {
 
     return (
         <Modal
-            okType="link"
             open={open}
             title="Create a new student"
             okText="Create"
