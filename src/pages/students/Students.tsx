@@ -1,12 +1,14 @@
 import { Button } from 'antd';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { IModal } from 'src/models';
 import { List, Create, Search } from './components';
 function Students() {
-    const [open, setOpen] = useState(false);
+    const create = useRef<IModal>(null);
 
-    const toggleModal = () => {
-        setOpen(false);
+    const showModal = () => {
+        create.current?.showModal();
     };
+
     return (
         <section className="bg-gray-50 p-3 sm:p-5">
             <div className="mx-auto container">
@@ -16,22 +18,10 @@ function Students() {
                             <Search />
                         </div>
                         <div className="w-1/2 flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-                            <Button
-                                className=""
-                                type="primary"
-                                onClick={() => {
-                                    setOpen(true);
-                                }}
-                            >
+                            <Button className="" type="primary" onClick={showModal}>
                                 Add Student
                             </Button>
-                            <Create
-                                open={open}
-                                toggleModal={toggleModal}
-                                onCancel={() => {
-                                    setOpen(false);
-                                }}
-                            />
+                            <Create ref={create} />
                             {/* <div className="flex items-center space-x-3 w-full md:w-auto">
                                     <button
                                         id="actionsDropdownButton"

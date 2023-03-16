@@ -1,19 +1,22 @@
-import React, { useState } from 'react';
-import { Button, Form, Input, Modal, Radio, InputNumber, Switch, Select } from 'antd';
+import { useState, forwardRef, ForwardedRef, useImperativeHandle } from 'react';
+import { Form, Input, Modal, Switch, Select } from 'antd';
 import type { SelectProps } from 'antd';
-import { IStudent } from 'src/models/students.model';
 import { studentsService } from 'src/services/features';
 import { notify } from 'src/utils/Notify';
+import { IModal } from 'src/models';
+import { IStudent } from 'src/models/students.model';
 
-interface CreateProps {
-    open: boolean;
-    toggleModal: () => void;
-    onCancel: () => void;
-}
-
-function Create({ open, toggleModal, onCancel }: CreateProps) {
+const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
     const [form] = Form.useForm();
-
+    const [open, setOpen] = useState(false);
+    useImperativeHandle(ref, () => ({
+        showModal: () => {
+            setOpen(true);
+        },
+        hideModal: () => {
+            setOpen(false);
+        },
+    }));
     const checkAge = (rule, value: string) => {
         if (+value > 0 && +value < 120) {
             return Promise.resolve();
@@ -107,20 +110,18 @@ function Create({ open, toggleModal, onCancel }: CreateProps) {
                 }),
             );
     };
-
     return (
         <Modal
             open={open}
             title="Create a new student"
             okText="Create"
             cancelText="Cancel"
-            onCancel={onCancel}
+            onCancel={() => setOpen(false)}
             onOk={() => {
                 form.validateFields()
                     .then((values) => {
                         form.resetFields();
                         onFormSubmit(values);
-                        toggleModal();
                     })
                     .catch((info) => {
                         console.log('Validate Failed:', info);
@@ -264,6 +265,6 @@ function Create({ open, toggleModal, onCancel }: CreateProps) {
             </Form>
         </Modal>
     );
-}
+});
 
 export default Create;

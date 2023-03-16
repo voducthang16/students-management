@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { getListStudentsAsync, listStudents } from '~store/slice/students-slice';
 import Item from '../Item';
+import TableCustom from '~components/custom/TableCustom';
 function List() {
     const dispatch = useAppDispatch();
     const list = useAppSelector(listStudents);
@@ -69,6 +70,7 @@ function List() {
                     ))}
             </tbody>
         </table>
+        // <TableCustom />
     );
 }
 

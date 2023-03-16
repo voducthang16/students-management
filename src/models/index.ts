@@ -40,3 +40,8 @@ export interface IDataCreate {
 export interface IDataResponse extends IDataCreate {
     id: number;
 }
+
+export interface IModal {
+    showModal: () => void;
+    hideModal: () => void;
+}
