@@ -16,4 +16,5 @@ export interface IStudent extends ITableData {
 
 export interface IStudentList {
     list: IStudent[];
+    total: number;
 }

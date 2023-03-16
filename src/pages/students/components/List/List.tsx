@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from 'src/hooks';
-import { getListStudentsAsync, listStudents } from '~store/slice/students-slice';
-import { PaginationConfig } from 'src/config/Pagination';
-import TableCustom from '~components/custom/TableCustom';
-import { Table, Tag, Space, Image } from 'antd';
-import { IStudent } from 'src/models/students.model';
+import { Image, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
+import { useEffect } from 'react';
+import { PaginationConfig } from 'src/config/Pagination';
+import { useAppDispatch, useAppSelector } from 'src/hooks';
+import { IStudent } from 'src/models/students.model';
+import TableCustom from '~components/custom/TableCustom';
+import { getListStudentsAsync, getTotalStudentsAsync, listStudents, totalStudents } from '~store/slice/students-slice';
 
 function List() {
     const dispatch = useAppDispatch();
@@ -115,7 +115,13 @@ function List() {
         },
     ];
     useEffect(() => {
-        dispatch(getListStudentsAsync({}));
+        dispatch(
+            getListStudentsAsync({
+                page: '1',
+                limit: '10',
+            }),
+        );
+        dispatch(getTotalStudentsAsync());
     }, []);
     return (
         <TableCustom<IStudent>
@@ -123,8 +129,16 @@ function List() {
             IData={list}
             pagination={{
                 ...PaginationConfig,
-                total: 20,
-                pageSize: 5,
+                total: useAppSelector(totalStudents),
+                pageSize: 10,
+                onChange(page, pageSize) {
+                    dispatch(
+                        getListStudentsAsync({
+                            page: page.toString(),
+                            limit: pageSize.toString(),
+                        }),
+                    );
+                },
             }}
         />
     );

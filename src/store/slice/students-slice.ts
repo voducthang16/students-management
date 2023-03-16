@@ -5,6 +5,7 @@ import { studentsService } from 'src/services/features';
 
 const initialState: IStudentList = {
     list: [],
+    total: 0,
 };
 
 interface IPagination {
@@ -22,6 +23,11 @@ export const getListStudentsAsync = createAsyncThunk(
     },
 );
 
+export const getTotalStudentsAsync = createAsyncThunk('students/getTotal', async () => {
+    const response = await studentsService.getAll({});
+    return response.data;
+});
+
 export const studentsSlice = createSlice({
     name: 'students',
     initialState,
@@ -32,7 +38,11 @@ export const studentsSlice = createSlice({
         builder.addCase(getListStudentsAsync.fulfilled, (state, action) => {
             state.list = action.payload;
         });
+        builder.addCase(getTotalStudentsAsync.fulfilled, (state, action) => {
+            state.total = action.payload.length;
+        });
     },
 });
 export const listStudents = (state: RootState) => state.students.list;
+export const totalStudents = (state: RootState) => state.students.total;
 export default studentsSlice.reducer;
