@@ -8,16 +8,19 @@ const initialState: IStudentList = {
 };
 
 interface IPagination {
-    page: number;
-    limit: number;
+    page?: string;
+    limit?: string;
 }
 
-export const getListStudentsAsync = createAsyncThunk('students/getLists', async ({ page, limit }: IPagination) => {
-    const response = await studentsService.getAll({
-        url: `?page=${page}&limit=${limit}`,
-    });
-    return response.data;
-});
+export const getListStudentsAsync = createAsyncThunk(
+    'students/getLists',
+    async ({ page = '', limit = '' }: IPagination) => {
+        const response = await studentsService.getAll({
+            url: `?page=${page}&limit=${limit}`,
+        });
+        return response.data;
+    },
+);
 
 export const studentsSlice = createSlice({
     name: 'students',

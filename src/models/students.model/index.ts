@@ -1,5 +1,6 @@
-export interface IStudent {
-    id?: string;
+import { ITableData } from '..';
+
+export interface IStudent extends ITableData {
     name: string;
     avatar: string;
     email: string;

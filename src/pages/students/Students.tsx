@@ -6,7 +6,7 @@ function Students() {
     const create = useRef<IModal>(null);
 
     const showModal = () => {
-        create.current?.showModal();
+        if (create.current) create.current.showModal();
     };
 
     return (

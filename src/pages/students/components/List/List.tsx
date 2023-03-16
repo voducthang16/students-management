@@ -1,76 +1,132 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { getListStudentsAsync, listStudents } from '~store/slice/students-slice';
-import Item from '../Item';
+import { PaginationConfig } from 'src/config/Pagination';
 import TableCustom from '~components/custom/TableCustom';
+import { Table, Tag, Space, Image } from 'antd';
+import { IStudent } from 'src/models/students.model';
+import type { ColumnsType } from 'antd/es/table';
+import dayjs from 'dayjs';
+
 function List() {
     const dispatch = useAppDispatch();
     const list = useAppSelector(listStudents);
+
+    const renderTags = (name: string) => {
+        switch (name) {
+            case 'Music':
+                return '#2db7f5';
+            case 'Badminton':
+                return '#87d068';
+            case 'Football':
+                return '#108ee9';
+            case 'math':
+                return 'gold';
+            case 'physic':
+                return 'green';
+            case 'chemical':
+                return 'purple';
+            default:
+                return '#f50';
+        }
+    };
+
+    const columns: ColumnsType<IStudent> = [
+        {
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text) => <>{text}</>,
+        },
+        {
+            title: 'Avatar',
+            dataIndex: 'avatar',
+            key: 'avatar',
+            render: (text) => (
+                <Image
+                    src={text}
+                    alt={text}
+                    className={'rounded-full w-full !h-full'}
+                    rootClassName={'rounded-full h-14 w-14 p-0.5 border border-solid border-slate-200'}
+                    fallback="https://imageio.forbes.com/specials-images/imageserve/63a590cfe96a4fea66cc7319/Venusian-Lake/0x0.jpg?format=jpg&crop=1625,914,x0,y484,safe&width=960"
+                />
+            ),
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            key: 'email',
+            render: (text) => <>{text.toLocaleLowerCase()}</>,
+        },
+        {
+            title: 'Age',
+            dataIndex: 'age',
+            key: 'age',
+        },
+        {
+            title: 'Hobbies',
+            dataIndex: 'hobbies',
+            key: 'hobbies',
+            width: '90px',
+            render: (_, { hobbies }) => (
+                <div className="space-y-2">
+                    {hobbies.map((hobby) => (
+                        <Tag color={renderTags(hobby)} key={hobby}>
+                            {hobby.toUpperCase()}
+                        </Tag>
+                    ))}
+                </div>
+            ),
+        },
+        {
+            title: 'Sex',
+            key: 'sex',
+            dataIndex: 'sex',
+        },
+        {
+            title: 'Points',
+            key: 'points',
+            dataIndex: 'points',
+            width: 60,
+            render: (_, item) => (
+                <div className="space-y-2">
+                    <Tag color={renderTags('math')}>Math: {item.math}</Tag>
+                    <Tag color={renderTags('physic')}>Physic: {item.physic}</Tag>
+                    <Tag color={renderTags('chemical')}>Chemical: {item.chemical}</Tag>
+                </div>
+            ),
+        },
+        {
+            title: 'Date Created',
+            key: 'date created',
+            dataIndex: 'date created',
+            render: (_, { createdAt }) => dayjs(createdAt).format('DD-MM-YYYY'),
+        },
+        {
+            title: 'Date Updated',
+            key: 'date updated',
+            dataIndex: 'date updated',
+            render: (_, { updatedAt }) => dayjs(updatedAt).format('DD-MM-YYYY'),
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'actions',
+            key: 'actions',
+        },
+    ];
     useEffect(() => {
-        dispatch(
-            getListStudentsAsync({
-                page: 6,
-                limit: 10,
-            }),
-        );
+        dispatch(getListStudentsAsync({}));
     }, []);
     return (
-        <table className="w-full text-sm text-left text-gray-500 border-collapse">
-            <thead className="font-[Poppins] text-xs text-gray-700 uppercase bg-gray-50">
-                <tr>
-                    <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
-                        Name
-                    </th>
-                    <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
-                        Avatar
-                    </th>
-                    <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
-                        Email
-                    </th>
-                    <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
-                        Age
-                    </th>
-                    <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
-                        Hobbies
-                    </th>
-                    <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
-                        Sex
-                    </th>
-                    <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
-                        Points
-                    </th>
-                    <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
-                        Date Created
-                    </th>
-                    <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
-                        Date Updated
-                    </th>
-                    <th scope="col" className="px-4 py-3 border-solid border border-slate-300">
-                        <span>Actions</span>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {list &&
-                    list.map((item) => (
-                        <Item
-                            key={item.id}
-                            name={item.name}
-                            age={item.age}
-                            avatar={item.avatar}
-                            email={item.email}
-                            hobbies={item.hobbies}
-                            sex={item.sex}
-                            math={item.math}
-                            physic={item.physic}
-                            chemical={item.chemical}
-                            createdAt={item.createdAt}
-                            updatedAt={item.updatedAt}
-                        />
-                    ))}
-            </tbody>
-        </table>
-        // <TableCustom />
+        <TableCustom<IStudent>
+            IColumns={columns}
+            IData={list}
+            pagination={{
+                ...PaginationConfig,
+                total: 20,
+                pageSize: 5,
+            }}
+        />
     );
 }
 

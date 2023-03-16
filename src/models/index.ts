@@ -45,3 +45,12 @@ export interface IModal {
     showModal: () => void;
     hideModal: () => void;
 }
+
+export interface ITableData {
+    id: string;
+}
+
+export interface IPagination {
+    total: number;
+    perPage: number;
+}
