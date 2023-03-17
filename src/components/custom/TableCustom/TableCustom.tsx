@@ -16,7 +16,7 @@ interface ITableCustom<T> {
 //     console.log(true);
 //     return <Table columns={IColumns} dataSource={IData} rowKey={'id'} pagination={pagination} />;
 // }
-
+//
 function TableCustom<T extends ITableData>({
     IColumns,
     IData,
@@ -24,8 +24,6 @@ function TableCustom<T extends ITableData>({
     onChange: handleChangePage,
     filter,
 }: ITableCustom<T>) {
-    console.log(true);
-    //
     return (
         <Table
             columns={IColumns}
@@ -47,10 +45,4 @@ function TableCustom<T extends ITableData>({
         />
     );
 }
-export default memo(TableCustom) as <T extends ITableData>({
-    IColumns,
-    IData,
-    pagination,
-    onChange,
-    filter,
-}: ITableCustom<T>) => JSX.Element;
+export default TableCustom;

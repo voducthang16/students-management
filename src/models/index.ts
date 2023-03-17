@@ -27,6 +27,9 @@ export interface IHttpRequest<T = any> {
     headers?: {
         [key: string]: string | number;
     };
+    filter?: {
+        [key: string]: string | number;
+    };
 }
 
 export interface NewResponse<T> extends AxiosResponse<T> {

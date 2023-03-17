@@ -3,21 +3,38 @@ import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { useEffect, useState, useMemo } from 'react';
 import { paginationConfig } from 'src/constants';
-import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { IPagination } from 'src/models';
 import { IStudent } from 'src/models/students.model';
 import TableCustom from '~components/custom/TableCustom';
-import { getListStudentsAsync, getTotalStudentsAsync, listStudents, totalStudents } from '~store/slice/students-slice';
-
+import { studentsService } from 'src/services/features';
 function List() {
-    const dispatch = useAppDispatch();
-    const list = useAppSelector(listStudents);
-    const total = useAppSelector(totalStudents);
+    const [list, setList] = useState<IStudent[]>();
+    const [total, setTotal] = useState<number>(0);
     const [filter, setFilter] = useState<IPagination>(paginationConfig);
+
     useEffect(() => {
-        dispatch(getListStudentsAsync(filter));
-        dispatch(getTotalStudentsAsync());
+        getStudents(filter);
+
+        getTotalStudent();
     }, []);
+
+    const getStudents = (filter: IPagination) => {
+        studentsService.getAll({ filter }).then((res) => {
+            setList(res.data);
+        });
+    };
+
+    const getTotalStudent = () => {
+        studentsService
+            .getAll({})
+            .then((res) => {
+                setTotal(res.data.length);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
     const renderTags = (name: string) => {
         switch (name) {
             case 'Music':
@@ -120,21 +137,20 @@ function List() {
             key: 'actions',
         },
     ];
-    //
 
     const [status, setStatus] = useState(false);
 
     const handleChangePage = (filter: IPagination) => {
         setFilter(filter);
 
-        dispatch(getListStudentsAsync(filter));
+        getStudents(filter);
     };
 
     const memoized = useMemo(() => {
         return (
             <TableCustom<IStudent>
                 IColumns={columns}
-                IData={list}
+                IData={list!}
                 pagination={{
                     total: total,
                     pageSize: +filter.limit,
@@ -143,7 +159,7 @@ function List() {
                 filter={filter}
             />
         );
-    }, [filter]);
+    }, [list]);
 
     return (
         <>

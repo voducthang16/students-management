@@ -2,13 +2,14 @@ import { useState, forwardRef, ForwardedRef, useImperativeHandle } from 'react';
 import { Form, Input, Modal, Switch, Select } from 'antd';
 import type { SelectProps } from 'antd';
 import { studentsService } from 'src/services/features';
-import { notify } from 'src/utils/Notify';
+import { notify, slugify } from 'src/utils';
 import { IModal } from 'src/models';
 import { IStudent } from 'src/models/students.model';
 
 const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
     const [form] = Form.useForm();
     const [open, setOpen] = useState(false);
+
     useImperativeHandle(ref, () => ({
         showModal: () => {
             setOpen(true);
@@ -17,34 +18,6 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
             setOpen(false);
         },
     }));
-    const checkAge = (rule, value: string) => {
-        if (+value > 0 && +value < 120) {
-            return Promise.resolve();
-        } else {
-            return Promise.reject('Please enter age > 0 & age < 120');
-        }
-    };
-
-    const checkPointSubject = (rule, value: string, subject: string) => {
-        const regex = /^\d*\.?(?:\d{1,2})?$/;
-
-        if (value && regex.test(value.trim()) && +value >= 0 && +value <= 10) {
-            return Promise.resolve();
-        } else {
-            return Promise.reject(
-                `Please enter your ${subject} point following rules: >= 0 & <= 10, 1 dot & 2 decimal`,
-            );
-        }
-    };
-
-    const validLink = (rule, value: string) => {
-        const regex = /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/;
-        if (regex.test(value)) {
-            return Promise.resolve();
-        } else {
-            return Promise.reject('Please enter a valid URL');
-        }
-    };
 
     const options: SelectProps['options'] = [
         {
@@ -85,11 +58,51 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
         },
     ];
 
+    const checkAge = (rule, value: string) => {
+        if (+value > 0 && +value < 120) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    //
+
+    const checkPointSubject = (rule, value: string) => {
+        const regex = /^\d*\.?(?:\d{1,2})?$/;
+        if (value.trim().length > 0 && regex.test(value.trim()) && +value >= 0 && +value <= 10) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    const validLink = (rule, value: string) => {
+        const regex = /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/;
+        if (value && regex.test(value)) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     const checkLength = (rule, value: string) => {
         if (value && value.trim().length === 0) {
             return Promise.reject('Field do not empty!!!!!');
         } else {
             return Promise.resolve();
+        }
+    };
+
+    const validateInput = (rule, value, callback, message) => {
+        if (value && value.trim() !== 0) {
+            const valid = callback(rule, value);
+            if (valid) {
+                return Promise.resolve();
+            } else {
+                return Promise.reject(message);
+            }
+        } else {
+            return Promise.reject('Field do not empty!!!!!');
         }
     };
 
@@ -110,6 +123,12 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
                 }),
             );
     };
+
+    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        form.setFieldsValue({
+            slug: slugify(event.currentTarget.value),
+        });
+    };
     return (
         <Modal
             open={open}
@@ -128,14 +147,20 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
                     });
             }}
         >
-            <Form form={form} layout="vertical" name="form_in_modal">
+            <Form form={form} layout="vertical">
                 <Form.Item
                     name="name"
                     label="Name"
                     rules={[{ required: true, message: 'Please enter your name' }]}
-                    validateTrigger="onChange"
-                    validateFirst={true}
-                    // validateStatus="validating"
+                    hasFeedback
+                >
+                    <Input onChange={handleNameChange} />
+                </Form.Item>
+                <Form.Item
+                    name="slug"
+                    label="Slug"
+                    required
+                    // rules={[{ required: true, message: 'Please enter your name' }]}
                     hasFeedback
                 >
                     <Input />
@@ -150,44 +175,40 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
                             pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                         },
                     ]}
+                    hasFeedback
                 >
                     <Input />
                 </Form.Item>
                 <Form.Item
                     name="avatar"
                     label="Avatar URL"
+                    required
                     rules={[
-                        { required: true, message: 'Please enter your avatar url' },
                         {
-                            validator: (rule, value) => validLink(rule, value),
+                            validator: (rule, value) =>
+                                validateInput(rule, value, validLink, 'Please enter a valid email'),
                         },
                     ]}
+                    hasFeedback
                 >
                     <Input />
                 </Form.Item>
                 <Form.Item
                     name="age"
                     label="Age"
+                    required
                     rules={[
-                        { required: true, message: 'Please enter your age' },
                         {
-                            validator: (rule, value) => checkAge(rule, value),
+                            validator: (rule, value) =>
+                                validateInput(rule, value, checkAge, 'Please enter age > 0 & age < 120'),
                         },
                     ]}
                 >
                     <Input
                         type="text"
                         className={'w-full'}
-                        // onKeyPress={(e) => !/[0-9]/.test(e.key) && e.preventDefault()}
-                        // onPaste={(e) => {
-                        //     const replaceValue = e.clipboardData.getData('Text').replace(/[^0-9]/g, '');
-                        //     form.setFieldsValue({ age: replaceValue });
-                        //     form.validateFields(['age']);
-                        //     e.preventDefault();
-                        // }}
                         onChange={(e) => {
                             const replaceValue = e.currentTarget.value.replace(/[^\d]+/g, '');
-                            // const replaceValue = e.currentTarget.value.replace(/[^0-9]+/g, '');
                             form.setFieldsValue({ age: replaceValue });
                             form.validateFields(['age']);
                         }}
@@ -198,10 +219,16 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
                         className="flex-1"
                         name="math"
                         label="Math"
+                        required
                         rules={[
-                            { required: true, message: 'Please enter your math point' },
                             {
-                                validator: (rule, value) => checkPointSubject(rule, value, 'math'),
+                                validator: (rule, value) =>
+                                    validateInput(
+                                        rule,
+                                        value,
+                                        checkPointSubject,
+                                        'Please enter your math point following rules: >= 0 & <= 10, 1 dot & 2 decimal',
+                                    ),
                             },
                         ]}
                     >
@@ -226,28 +253,39 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
                         className="flex-1"
                         name="physic"
                         label="Physic"
+                        required
                         rules={[
-                            { required: true, message: 'Please enter your physic point' },
                             {
-                                validator: (rule, value) => checkPointSubject(rule, value, 'physic'),
+                                validator: (rule, value) =>
+                                    validateInput(
+                                        rule,
+                                        value,
+                                        checkPointSubject,
+                                        'Please enter your math point following rules: >= 0 & <= 10, 1 dot & 2 decimal',
+                                    ),
                             },
                         ]}
                     >
-                        <Input type="text" className="w-full" min={0} max={10} />
-                        {/* ^\d*\.?(?:\d{1,2})?$ */}
+                        <Input type="text" className="w-full" />
                     </Form.Item>
                     <Form.Item
                         className="flex-1"
                         name="chemical"
                         label="Chemical"
+                        required
                         rules={[
-                            { required: true, message: 'Please enter your chemical point' },
                             {
-                                validator: (rule, value) => checkPointSubject(rule, value, 'chemical'),
+                                validator: (rule, value) =>
+                                    validateInput(
+                                        rule,
+                                        value,
+                                        checkPointSubject,
+                                        'Please enter your math point following rules: >= 0 & <= 10, 1 dot & 2 decimal',
+                                    ),
                             },
                         ]}
                     >
-                        <Input type="text" className="w-full" min={0} max={10} />
+                        <Input type="text" className="w-full" />
                     </Form.Item>
                 </div>
                 <Form.Item name="sex" label="Sex" valuePropName="checked" initialValue>
