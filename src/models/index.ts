@@ -51,6 +51,5 @@ export interface ITableData {
 }
 
 export interface IPagination {
-    total: number;
-    perPage: number;
+    [key: string]: string | number;
 }

@@ -1,1 +1,0 @@
-export { PaginationConfig } from './Pagination';

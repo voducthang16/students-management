@@ -1,9 +1,11 @@
 import { Image, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { useEffect } from 'react';
-import { PaginationConfig } from 'src/config/Pagination';
+import { useEffect, useState } from 'react';
+import { TablePagination } from 'src/config/TablePagination';
+import { paginationConfig } from 'src/constants';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
+import { IPagination } from 'src/models';
 import { IStudent } from 'src/models/students.model';
 import TableCustom from '~components/custom/TableCustom';
 import { getListStudentsAsync, getTotalStudentsAsync, listStudents, totalStudents } from '~store/slice/students-slice';
@@ -114,33 +116,35 @@ function List() {
             key: 'actions',
         },
     ];
+    //
+    const [filter, setFilter] = useState<IPagination>(paginationConfig);
+
     useEffect(() => {
-        dispatch(
-            getListStudentsAsync({
-                page: '1',
-                limit: '10',
-            }),
-        );
+        dispatch(getListStudentsAsync(filter));
         dispatch(getTotalStudentsAsync());
     }, []);
+    const [status, setStatus] = useState(false);
+
+    const handleChangePage = (filter: IPagination) => {
+        setFilter(filter);
+
+        dispatch(getListStudentsAsync(filter));
+    };
+
     return (
-        <TableCustom<IStudent>
-            IColumns={columns}
-            IData={list}
-            pagination={{
-                ...PaginationConfig,
-                total: useAppSelector(totalStudents),
-                pageSize: 10,
-                onChange(page, pageSize) {
-                    dispatch(
-                        getListStudentsAsync({
-                            page: page.toString(),
-                            limit: pageSize.toString(),
-                        }),
-                    );
-                },
-            }}
-        />
+        <>
+            <TableCustom<IStudent>
+                IColumns={columns}
+                IData={list}
+                pagination={{
+                    total: useAppSelector(totalStudents),
+                    pageSize: +filter.limit,
+                }}
+                onChange={handleChangePage}
+                filter={filter}
+            />
+            <button onClick={() => setStatus(!status)}>BUTTON</button>
+        </>
     );
 }
 

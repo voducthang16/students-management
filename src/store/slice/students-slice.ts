@@ -2,26 +2,28 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IStudent, IStudentList } from 'src/models/students.model';
 import { RootState, AppThunk } from '~store/index';
 import { studentsService } from 'src/services/features';
+import { IPagination } from 'src/models';
 
 const initialState: IStudentList = {
     list: [],
     total: 0,
 };
 
-interface IPagination {
-    page?: string;
-    limit?: string;
-}
-
-export const getListStudentsAsync = createAsyncThunk(
-    'students/getLists',
-    async ({ page = '', limit = '' }: IPagination) => {
-        const response = await studentsService.getAll({
-            url: `?page=${page}&limit=${limit}`,
-        });
-        return response.data;
-    },
-);
+export const getListStudentsAsync = createAsyncThunk('students/getLists', async (filter: IPagination) => {
+    let queryString = '';
+    for (const key in filter) {
+        if (filter.hasOwnProperty(key)) {
+            if (queryString.length > 0) {
+                queryString += '&';
+            }
+            queryString += `${encodeURIComponent(key)}=${encodeURIComponent(filter[key])}`;
+        }
+    }
+    const response = await studentsService.getAll({
+        url: `?${queryString}`,
+    });
+    return response.data;
+});
 
 export const getTotalStudentsAsync = createAsyncThunk('students/getTotal', async () => {
     const response = await studentsService.getAll({});

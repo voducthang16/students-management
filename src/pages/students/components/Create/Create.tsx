@@ -86,7 +86,7 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
     ];
 
     const checkLength = (rule, value: string) => {
-        if (value.trim().length === 0) {
+        if (value && value.trim().length === 0) {
             return Promise.reject('Field do not empty!!!!!');
         } else {
             return Promise.resolve();
@@ -132,12 +132,11 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
                 <Form.Item
                     name="name"
                     label="Name"
-                    rules={[
-                        { required: true, message: 'Please enter your name' },
-                        {
-                            validator: (rule, value) => checkLength(rule, value),
-                        },
-                    ]}
+                    rules={[{ required: true, message: 'Please enter your name' }]}
+                    validateTrigger="onChange"
+                    validateFirst={true}
+                    // validateStatus="validating"
+                    hasFeedback
                 >
                     <Input />
                 </Form.Item>
