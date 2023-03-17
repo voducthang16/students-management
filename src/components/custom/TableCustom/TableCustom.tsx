@@ -47,5 +47,10 @@ function TableCustom<T extends ITableData>({
         />
     );
 }
-
-export default memo(TableCustom) as <T extends ITableData>(props: ITableCustom<T>) => JSX.Element;
+export default memo(TableCustom) as <T extends ITableData>({
+    IColumns,
+    IData,
+    pagination,
+    onChange,
+    filter,
+}: ITableCustom<T>) => JSX.Element;

@@ -1,8 +1,7 @@
 import { Image, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
-import { TablePagination } from 'src/config/TablePagination';
+import { useEffect, useState, useMemo } from 'react';
 import { paginationConfig } from 'src/constants';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { IPagination } from 'src/models';
@@ -13,7 +12,12 @@ import { getListStudentsAsync, getTotalStudentsAsync, listStudents, totalStudent
 function List() {
     const dispatch = useAppDispatch();
     const list = useAppSelector(listStudents);
-
+    const total = useAppSelector(totalStudents);
+    const [filter, setFilter] = useState<IPagination>(paginationConfig);
+    useEffect(() => {
+        dispatch(getListStudentsAsync(filter));
+        dispatch(getTotalStudentsAsync());
+    }, []);
     const renderTags = (name: string) => {
         switch (name) {
             case 'Music':
@@ -117,12 +121,7 @@ function List() {
         },
     ];
     //
-    const [filter, setFilter] = useState<IPagination>(paginationConfig);
 
-    useEffect(() => {
-        dispatch(getListStudentsAsync(filter));
-        dispatch(getTotalStudentsAsync());
-    }, []);
     const [status, setStatus] = useState(false);
 
     const handleChangePage = (filter: IPagination) => {
@@ -131,18 +130,24 @@ function List() {
         dispatch(getListStudentsAsync(filter));
     };
 
-    return (
-        <>
+    const memoized = useMemo(() => {
+        return (
             <TableCustom<IStudent>
                 IColumns={columns}
                 IData={list}
                 pagination={{
-                    total: useAppSelector(totalStudents),
+                    total: total,
                     pageSize: +filter.limit,
                 }}
                 onChange={handleChangePage}
                 filter={filter}
             />
+        );
+    }, [filter]);
+
+    return (
+        <>
+            {memoized}
             <button onClick={() => setStatus(!status)}>BUTTON</button>
         </>
     );
