@@ -1,4 +1,4 @@
-import { Image, Tag } from 'antd';
+import { Image, Popconfirm, Switch, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { useEffect, useState, useMemo } from 'react';
@@ -7,6 +7,7 @@ import { IPagination } from 'src/models';
 import { IStudent } from 'src/models/students.model';
 import TableCustom from '~components/custom/TableCustom';
 import { studentsService } from 'src/services/features';
+import { notify } from 'src/utils';
 function List() {
     const [list, setList] = useState<IStudent[]>();
     const [total, setTotal] = useState<number>(0);
@@ -52,6 +53,24 @@ function List() {
             default:
                 return '#f50';
         }
+    };
+
+    const handleOnSwitch = (record: IStudent) => {
+        const newRecord = { ...record };
+        newRecord.sex = !newRecord.sex;
+        studentsService
+            .put({
+                payload: newRecord,
+            })
+            .then(() => {
+                notify.success({
+                    message: 'Success',
+                    description: 'Update Sex Successfully',
+                    duration: 3,
+                });
+                getStudents(filter);
+            })
+            .catch((err) => console.log(err));
     };
 
     const columns: ColumnsType<IStudent> = [
@@ -105,6 +124,20 @@ function List() {
             title: 'Sex',
             key: 'sex',
             dataIndex: 'sex',
+            render: (_, record) => (
+                <Popconfirm
+                    title="Sure to change?"
+                    onConfirm={() => {
+                        handleOnSwitch(record);
+                    }}
+                >
+                    <Switch
+                        checked={record.sex}
+                        checkedChildren={record.sex ? 'Male' : 'Female'}
+                        unCheckedChildren={!record.sex ? 'Female' : 'Male'}
+                    />
+                </Popconfirm>
+            ),
         },
         {
             title: 'Points',

@@ -107,21 +107,18 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
     };
 
     const onFormSubmit = (values: IStudent) => {
-        const valueRequest = {
-            ...values,
-            sex: values.sex ? 'male' : 'female',
-        };
         studentsService
             .create({
-                payload: valueRequest,
+                payload: values,
             })
-            .then(() =>
+            .then(() => {
                 notify.success({
                     message: 'Success',
                     description: 'Created Student Success',
                     duration: 3,
-                }),
-            );
+                });
+                setOpen(false);
+            });
     };
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -6,7 +6,7 @@ export interface IStudent extends ITableData {
     email: string;
     age: number;
     hobbies: string[];
-    sex: string;
+    sex: boolean;
     math: string;
     physic: string;
     chemical: string;

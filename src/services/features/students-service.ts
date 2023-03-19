@@ -23,4 +23,10 @@ export const studentsService = {
             headers,
         });
     },
+    put({ payload }: IHttpRequest<IStudent>) {
+        return httpRequest.put<IStudent, IStudent>({
+            url: `/students/${payload?.id}`,
+            payload,
+        });
+    },
 };

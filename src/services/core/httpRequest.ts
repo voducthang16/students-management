@@ -14,9 +14,16 @@ const post = <TypeReq, TypeRes>({ url, payload, headers }: IHttpRequest<TypeReq>
     });
 };
 
+const put = <TypeReq, TypeRes>({ url, payload, headers }: IHttpRequest<TypeReq>) => {
+    return instance.put<TypeRes, NewResponse<TypeRes>, TypeReq>(url!, payload, {
+        headers,
+    });
+};
+
 const httpRequest = {
     get,
     post,
+    put,
 };
 
 export default httpRequest;
