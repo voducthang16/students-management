@@ -1,19 +1,12 @@
 import httpRequest from '../core/httpRequest';
 import { IStudent } from 'src/models/students.model';
 import { IHttpRequest } from 'src/models';
+import { queryString } from 'src/utils';
 export const studentsService = {
     getAll({ filter }: IHttpRequest) {
-        let queryString = '';
-        for (const key in filter) {
-            if (filter.hasOwnProperty(key)) {
-                if (queryString.length > 0) {
-                    queryString += '&';
-                }
-                queryString += `${encodeURIComponent(key)}=${encodeURIComponent(filter[key])}`;
-            }
-        }
+        const query = queryString({ filter });
         return httpRequest.get<IStudent[]>({
-            url: `students?${queryString}`,
+            url: `students${query}`,
         });
     },
     create({ payload, headers }: IHttpRequest<IStudent>) {

@@ -7,19 +7,26 @@ import { IPagination } from 'src/models';
 import { IStudent } from 'src/models/students.model';
 import TableCustom from '~components/custom/TableCustom';
 import { studentsService } from 'src/services/features';
-import { notify } from 'src/utils';
+import { notify, queryString } from 'src/utils';
+import { useLocation, useNavigate } from 'react-router-dom';
 function List() {
     const [list, setList] = useState<IStudent[]>();
     const [total, setTotal] = useState<number>(0);
     const [filter, setFilter] = useState<IPagination>(paginationConfig);
+    const location = useLocation();
+    const navigate = useNavigate();
+    const params = location.search;
+    const currentPage = new URLSearchParams(params).get('page') || 1;
 
     useEffect(() => {
-        getStudents(filter);
+        let queryString: string | IPagination = filter;
+        if (params.length !== 0) queryString = params;
+        getStudents(queryString);
 
         getTotalStudent();
     }, []);
 
-    const getStudents = (filter: IPagination) => {
+    const getStudents = (filter: string | IPagination) => {
         studentsService.getAll({ filter }).then((res) => {
             setList(res.data);
         });
@@ -174,9 +181,10 @@ function List() {
     const [status, setStatus] = useState(false);
 
     const handleChangePage = (filter: IPagination) => {
-        setFilter(filter);
-
         getStudents(filter);
+        const query = queryString({ filter });
+        navigate(`/${query}`);
+        setFilter(filter);
     };
 
     const memoized = useMemo(() => {
@@ -187,6 +195,7 @@ function List() {
                 pagination={{
                     total: total,
                     pageSize: +filter.limit,
+                    current: +currentPage,
                 }}
                 onChange={handleChangePage}
                 filter={filter}
