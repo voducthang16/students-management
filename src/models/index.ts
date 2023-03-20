@@ -1,4 +1,5 @@
 import { AxiosResponse } from 'axios';
+import { IStudent } from './students.model';
 
 export interface IProduct {
     id: number;
@@ -47,8 +48,9 @@ export interface IDataResponse extends IDataCreate {
 }
 
 export interface IModal {
-    showModal: () => void;
-    hideModal: () => void;
+    showModal: (record?: IStudent, id?: string) => void;
+    hideModal?: () => void;
+    getInfo?: (record: IStudent) => void;
 }
 
 export interface ITableData {

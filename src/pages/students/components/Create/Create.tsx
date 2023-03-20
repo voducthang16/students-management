@@ -6,12 +6,23 @@ import { notify, slugify } from 'src/utils';
 import { IModal } from 'src/models';
 import { IStudent } from 'src/models/students.model';
 
-const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
+interface IProps {
+    onChange?: () => void;
+}
+
+const Create = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
+    const { onChange } = props;
     const [form] = Form.useForm();
     const [open, setOpen] = useState(false);
+    const [isReadOnly, setIsReadOnly] = useState(true);
+    const [studentId, setStudentId] = useState<string | undefined>();
 
     useImperativeHandle(ref, () => ({
-        showModal: () => {
+        showModal: (record) => {
+            if (record) {
+                form.setFieldsValue(record);
+                setStudentId(record.id);
+            }
             setOpen(true);
         },
         hideModal: () => {
@@ -65,7 +76,6 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
             return false;
         }
     };
-    //
 
     const checkPointSubject = (rule, value: string) => {
         const regex = /^\d*\.?(?:\d{1,2})?$/;
@@ -94,7 +104,7 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
     };
 
     const validateInput = (rule, value, callback, message) => {
-        if (value && value.trim() !== 0) {
+        if (value && value.toString().trim() !== 0) {
             const valid = callback(rule, value);
             if (valid) {
                 return Promise.resolve();
@@ -106,7 +116,7 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
         }
     };
 
-    const onFormSubmit = (values: IStudent) => {
+    const createStudent = (values: IStudent) => {
         studentsService
             .create({
                 payload: values,
@@ -121,16 +131,48 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
             });
     };
 
+    const updatedStudent = (values: IStudent) => {
+        studentsService
+            .put({
+                payload: {
+                    ...values,
+                    id: studentId!,
+                },
+            })
+            .then(() => {
+                notify.success({
+                    message: 'Success',
+                    description: 'Update Student Successfully',
+                    duration: 3,
+                });
+                setOpen(false);
+                onChange?.();
+            })
+            .catch((err) => console.log(err));
+    };
+
+    const onFormSubmit = (values: IStudent) => {
+        +studentId! > 0 ? updatedStudent(values) : createStudent(values);
+    };
+
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         form.setFieldsValue({
             slug: slugify(event.currentTarget.value),
         });
     };
+
+    const handleFocus = () => {
+        setIsReadOnly(false);
+    };
+    const handleBlur = () => {
+        setIsReadOnly(true);
+    };
+
     return (
         <Modal
             open={open}
-            title="Create a new student"
-            okText="Create"
+            title={`Create a new student`}
+            okText="Save"
             cancelText="Cancel"
             onCancel={() => setOpen(false)}
             onOk={() => {
@@ -143,6 +185,8 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
                         console.log('Validate Failed:', info);
                     });
             }}
+            bodyStyle={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)', paddingRight: '16px' }}
+            centered
         >
             <Form form={form} layout="vertical">
                 <Form.Item
@@ -160,7 +204,7 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
                     // rules={[{ required: true, message: 'Please enter your name' }]}
                     hasFeedback
                 >
-                    <Input />
+                    <Input readOnly={isReadOnly} onFocus={handleFocus} onBlur={handleBlur} />
                 </Form.Item>
                 <Form.Item
                     name="email"
@@ -285,8 +329,8 @@ const Create = forwardRef(function Create(props, ref: ForwardedRef<IModal>) {
                         <Input type="text" className="w-full" />
                     </Form.Item>
                 </div>
-                <Form.Item name="sex" label="Sex" valuePropName="checked" initialValue>
-                    <Switch className="bg" checkedChildren="Male" unCheckedChildren="Female" defaultChecked />
+                <Form.Item name="sex" label="Sex" valuePropName="checked">
+                    <Switch checkedChildren="Male" unCheckedChildren="Female" defaultChecked />
                 </Form.Item>
                 <Form.Item name="hobbies" label="Hobbies">
                     <Select

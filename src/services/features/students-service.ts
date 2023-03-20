@@ -9,16 +9,21 @@ export const studentsService = {
             url: `students${query}`,
         });
     },
+    getOne(id: string | number) {
+        return httpRequest.get<IStudent>({
+            url: `students/${id}`,
+        });
+    },
     create({ payload, headers }: IHttpRequest<IStudent>) {
         return httpRequest.post<IStudent, IStudent>({
-            url: '/students',
+            url: 'students',
             payload,
             headers,
         });
     },
     put({ payload }: IHttpRequest<IStudent>) {
         return httpRequest.put<IStudent, IStudent>({
-            url: `/students/${payload?.id}`,
+            url: `students/${payload?.id}`,
             payload,
         });
     },

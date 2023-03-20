@@ -1,34 +1,46 @@
-import { Image, Popconfirm, Switch, Tag } from 'antd';
+import { useEffect, useState, useMemo, useRef } from 'react';
+import { Image, Popconfirm, Switch, Tag, Skeleton, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { useEffect, useState, useMemo } from 'react';
 import { paginationConfig } from 'src/constants';
-import { IPagination } from 'src/models';
+import { IModal, IPagination } from 'src/models';
 import { IStudent } from 'src/models/students.model';
 import TableCustom from '~components/custom/TableCustom';
 import { studentsService } from 'src/services/features';
 import { notify, queryString } from 'src/utils';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { TablePagination } from 'src/config/TablePagination';
+import { EditFilled, PlusCircleFilled } from '@ant-design/icons';
+import Create from '../Create';
 function List() {
+    const [loading, setLoading] = useState<boolean>(false);
+
     const [list, setList] = useState<IStudent[]>();
     const [total, setTotal] = useState<number>(0);
+
+    // PARAMS URL
     const [filter, setFilter] = useState<IPagination>(paginationConfig);
-    const location = useLocation();
+
+    const [pageSize, setPageSize] = useState<number>(paginationConfig.limit);
+    const [pageSizeOptions, setPageSizeOptions] = useState(TablePagination.pageSizeOptions);
+
     const navigate = useNavigate();
+    const location = useLocation();
     const params = location.search;
+
     const currentPage = new URLSearchParams(params).get('page') || 1;
 
     useEffect(() => {
         let queryString: string | IPagination = filter;
         if (params.length !== 0) queryString = params;
         getStudents(queryString);
-
         getTotalStudent();
     }, []);
 
-    const getStudents = (filter: string | IPagination) => {
-        studentsService.getAll({ filter }).then((res) => {
+    const getStudents = (filterCurrent: string | IPagination = filter) => {
+        studentsService.getAll({ filter: filterCurrent }).then((res) => {
             setList(res.data);
+            setLoading(true);
         });
     };
 
@@ -37,6 +49,7 @@ function List() {
             .getAll({})
             .then((res) => {
                 setTotal(res.data.length);
+                handleNewPageSizeOptions(res.data.length);
             })
             .catch((err) => {
                 console.log(err);
@@ -80,12 +93,18 @@ function List() {
             .catch((err) => console.log(err));
     };
 
+    const create = useRef<IModal>(null);
+    const showModal = (record: IStudent) => {
+        create.current && create.current.showModal(record);
+    };
+
     const columns: ColumnsType<IStudent> = [
         {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
             render: (text) => <>{text}</>,
+            fixed: 'left',
         },
         {
             title: 'Avatar',
@@ -175,16 +194,58 @@ function List() {
             title: 'Actions',
             dataIndex: 'actions',
             key: 'actions',
+            render: (_, record) => (
+                <div className="flex">
+                    <div title="Edit User">
+                        <Button
+                            type="ghost"
+                            onClick={() => {
+                                showModal(record);
+                            }}
+                        >
+                            <EditFilled className="text-lg cursor-pointer hover:opacity-80 transition-all" />
+                        </Button>
+                        <Create onChange={getStudents} ref={create} />
+                    </div>
+                    {/* <div title="Add Task">
+                        <Button
+                            type="ghost"
+                            onClick={() => {
+                                showModal(record);
+                            }}
+                        >
+                            <PlusCircleFilled className="text-lg cursor-pointer hover:opacity-80 transition-all" />
+                        </Button>
+                        <Create ref={create} />
+                    </div> */}
+                </div>
+            ),
+            fixed: 'right',
         },
     ];
 
+    const handleNewPageSizeOptions = (dataLength?: number) => {
+        const pageCount = Math.ceil(dataLength! / pageSize);
+        const newPageSizeOptions: string[] = [];
+        for (let i = 1; i <= pageCount; i++) {
+            newPageSizeOptions.push(`${i * pageSize}`);
+        }
+        setPageSizeOptions(newPageSizeOptions);
+    };
+
     const [status, setStatus] = useState(false);
 
-    const handleChangePage = (filter: IPagination) => {
+    const handlePageSizeChange = (filter: IPagination) => {
         getStudents(filter);
         const query = queryString({ filter });
         navigate(`/${query}`);
         setFilter(filter);
+        setPageSize(+filter.limit);
+    };
+
+    const handlePageSizeOptionsChange = (current: number, size: number) => {
+        setPageSizeOptions([`${size}`, '20', '50', '100']);
+        setPageSize(size);
     };
 
     const memoized = useMemo(() => {
@@ -194,10 +255,12 @@ function List() {
                 IData={list!}
                 pagination={{
                     total: total,
-                    pageSize: +filter.limit,
+                    pageSize: +pageSize,
                     current: +currentPage,
+                    pageSizeOptions: pageSizeOptions,
                 }}
-                onChange={handleChangePage}
+                onChange={handlePageSizeChange}
+                onShowSizeChange={handlePageSizeOptionsChange}
                 filter={filter}
             />
         );
@@ -205,7 +268,7 @@ function List() {
 
     return (
         <>
-            {memoized}
+            {loading ? memoized : <Skeleton />}
             <button onClick={() => setStatus(!status)}>BUTTON</button>
         </>
     );
