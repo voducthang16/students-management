@@ -1,4 +1,4 @@
-function Search() {
+function StudentSearchScene() {
     return (
         <form className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -26,4 +26,4 @@ function Search() {
     );
 }
 
-export default Search;
+export default StudentSearchScene;

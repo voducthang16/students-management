@@ -1,32 +1,52 @@
-import { useState, forwardRef, ForwardedRef, useImperativeHandle } from 'react';
-import { Form, Input, Modal, Switch, Select } from 'antd';
 import type { SelectProps } from 'antd';
-import { studentsService } from 'src/services/features';
-import { notify, slugify } from 'src/utils';
+import { Form, Input, Modal, Select, Switch } from 'antd';
+import { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
 import { IModal } from 'src/models';
 import { IStudent } from 'src/models/students.model';
+import { studentsService } from 'src/services/features';
+import { notify, slugify } from 'src/utils';
 
 interface IProps {
     onChange?: () => void;
 }
 
-const Create = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
+const FormStudent = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
     const { onChange } = props;
     const [form] = Form.useForm();
     const [open, setOpen] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(true);
     const [studentId, setStudentId] = useState<string | undefined>();
 
+    const getDetailStudent = (id: string | number) => {
+        studentsService
+            .getOne(id)
+            .then((res) => setFormValues(res.data))
+            .catch(() => {
+                notify.error({
+                    message: 'Error',
+                    description: 'Get Detail Student Error',
+                    duration: 3,
+                });
+            });
+    };
+
+    const setFormValues = (data: IStudent) => {
+        form.setFieldsValue(data);
+    };
+
+    const resetFormValues = () => {
+        form.resetFields();
+    };
+
     useImperativeHandle(ref, () => ({
-        showModal: (record) => {
-            if (record) {
-                form.setFieldsValue(record);
-                setStudentId(record.id);
-            }
+        showModal: () => {
             setOpen(true);
         },
-        hideModal: () => {
-            setOpen(false);
+        getStudentInfo(record) {
+            if (record) {
+                setStudentId(record.id);
+                getDetailStudent(record.id);
+            }
         },
     }));
 
@@ -50,22 +70,6 @@ const Create = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
         {
             value: 'Watch TV',
             label: 'Watch TV',
-        },
-        {
-            value: 'Watch TV 2',
-            label: 'Watch TV 2',
-        },
-        {
-            value: 'Watch TV 3',
-            label: 'Watch TV 3',
-        },
-        {
-            value: 'Watch TV 4',
-            label: 'Watch TV 4',
-        },
-        {
-            value: 'Watch TV 5',
-            label: 'Watch TV 5',
         },
     ];
 
@@ -95,14 +99,6 @@ const Create = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
         }
     };
 
-    const checkLength = (rule, value: string) => {
-        if (value && value.trim().length === 0) {
-            return Promise.reject('Field do not empty!!!!!');
-        } else {
-            return Promise.resolve();
-        }
-    };
-
     const validateInput = (rule, value, callback, message) => {
         if (value && value.toString().trim() !== 0) {
             const valid = callback(rule, value);
@@ -124,7 +120,7 @@ const Create = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
             .then(() => {
                 notify.success({
                     message: 'Success',
-                    description: 'Created Student Success',
+                    description: 'Create Student Success',
                     duration: 3,
                 });
                 setOpen(false);
@@ -140,19 +136,21 @@ const Create = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
                 },
             })
             .then(() => {
+                onChange?.();
                 notify.success({
                     message: 'Success',
                     description: 'Update Student Successfully',
                     duration: 3,
                 });
                 setOpen(false);
-                onChange?.();
             })
             .catch((err) => console.log(err));
     };
 
     const onFormSubmit = (values: IStudent) => {
-        +studentId! > 0 ? updatedStudent(values) : createStudent(values);
+        console.log(values);
+
+        // +studentId! > 0 ? updatedStudent(values) : createStudent(values);
     };
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,27 +162,33 @@ const Create = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
     const handleFocus = () => {
         setIsReadOnly(false);
     };
+
     const handleBlur = () => {
         setIsReadOnly(true);
+    };
+
+    const handleOnOk = () => {
+        form.validateFields()
+            .then((values) => {
+                onFormSubmit(values);
+                resetFormValues();
+            })
+            .catch((info) => {
+                console.log('Validate Failed:', info);
+            });
     };
 
     return (
         <Modal
             open={open}
-            title={`Create a new student`}
+            title={`${(studentId && studentId.length)! > 0 ? 'Update' : 'Create'} student`}
             okText="Save"
             cancelText="Cancel"
-            onCancel={() => setOpen(false)}
-            onOk={() => {
-                form.validateFields()
-                    .then((values) => {
-                        form.resetFields();
-                        onFormSubmit(values);
-                    })
-                    .catch((info) => {
-                        console.log('Validate Failed:', info);
-                    });
+            onCancel={() => {
+                setOpen(false);
+                resetFormValues();
             }}
+            onOk={handleOnOk}
             bodyStyle={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)', paddingRight: '16px' }}
             centered
         >
@@ -197,14 +201,13 @@ const Create = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
                 >
                     <Input onChange={handleNameChange} />
                 </Form.Item>
-                <Form.Item
-                    name="slug"
-                    label="Slug"
-                    required
-                    // rules={[{ required: true, message: 'Please enter your name' }]}
-                    hasFeedback
-                >
-                    <Input readOnly={isReadOnly} onFocus={handleFocus} onBlur={handleBlur} />
+                <Form.Item name="slug" label="Slug" required hasFeedback>
+                    <Input
+                        className={`${isReadOnly && 'bg-gray-400'}`}
+                        readOnly={isReadOnly}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
+                    />
                 </Form.Item>
                 <Form.Item
                     name="email"
@@ -273,22 +276,7 @@ const Create = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
                             },
                         ]}
                     >
-                        <Input
-                            type="text"
-                            className="w-full"
-                            // onKeyPress={(e) => {
-                            //     console.log(e.key);
-                            //     console.log(!/[0-9]/.test(e.key));
-                            //     console.log(/\./.test(e.key));
-
-                            //     // (!/[0-9]/.test(e.key) || !/[\.]/.test(e.key)) && e.preventDefault();
-                            //     (/\./.test(e.key) || !/[0-9]/.test(e.key)) && e.preventDefault();
-                            // }}
-                            // onPaste={(e) => {
-                            //     const replaceValue = e.clipboardData.getData('Text').replace(/(\.\d+).*/, '');
-                            //     console.log('🚀 ~ file: index.tsx:143 ~ replaceValue:', replaceValue);
-                            // }}
-                        />
+                        <Input type="text" className="w-full" />
                     </Form.Item>
                     <Form.Item
                         className="flex-1"
@@ -329,7 +317,7 @@ const Create = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
                         <Input type="text" className="w-full" />
                     </Form.Item>
                 </div>
-                <Form.Item name="sex" label="Sex" valuePropName="checked">
+                <Form.Item name="sex" label="Sex" valuePropName="checked" initialValue={true}>
                     <Switch checkedChildren="Male" unCheckedChildren="Female" defaultChecked />
                 </Form.Item>
                 <Form.Item name="hobbies" label="Hobbies">
@@ -345,4 +333,4 @@ const Create = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
     );
 });
 
-export default Create;
+export default FormStudent;
