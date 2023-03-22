@@ -26,6 +26,7 @@ const TaskFormScene = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
         taskServices
             .create({
                 payload: values,
+                url: `students/${studentId}/tasks`,
             })
             .then(() => {
                 notify.success({
@@ -40,11 +41,7 @@ const TaskFormScene = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
     const handleOnOk = () => {
         form.validateFields()
             .then((values) => {
-                const newValues = {
-                    ...values,
-                    studentId,
-                };
-                onFormSubmit(newValues);
+                onFormSubmit(values);
                 form.resetFields();
             })
             .catch((info) => {
