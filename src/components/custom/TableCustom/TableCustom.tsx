@@ -1,8 +1,9 @@
-import { memo } from 'react';
 import { Table } from 'antd';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
+import { memo, useMemo } from 'react';
 import { TablePagination } from 'src/config/TablePagination';
-import { ITableData, IPagination } from 'src/models';
+import { PaginationConfig } from 'src/const';
+import { IPagination, ITableData } from 'src/models';
 
 interface ITableCustom<T> {
     IColumns: ColumnsType<T>;
@@ -10,20 +11,21 @@ interface ITableCustom<T> {
     pagination?: TablePaginationConfig;
     onChange: (filter: IPagination) => void;
     filter: IPagination;
+    totalItem: number;
 }
 
-// function TableCustom<T extends ITableData>({ IColumns, IData, pagination = PaginationConfig }: ITableCustom<T>) {
-//     console.log(true);
-//     return <Table columns={IColumns} dataSource={IData} rowKey={'id'} pagination={pagination} />;
-// }
-//
+const genericMemo: <T>(component: T) => T = memo;
+
 function TableCustom<T extends ITableData>({
     IColumns,
     IData,
     pagination,
-    onChange: handleChangePage,
+    onChange: handlePageSizeChange,
     filter,
+    totalItem,
 }: ITableCustom<T>) {
+    const { page, limit } = filter;
+    const newParams = useMemo(() => new PaginationConfig(+page, +limit), [filter]);
     return (
         <Table
             columns={IColumns}
@@ -32,17 +34,16 @@ function TableCustom<T extends ITableData>({
             pagination={{
                 ...TablePagination,
                 ...pagination,
+                pageSize: +limit,
+                total: totalItem,
                 onChange: (page, pageSize) => {
-                    const newQueryString = { ...filter, page: page, limit: pageSize };
+                    const newQueryString = { ...newParams, page, limit: pageSize };
+                    handlePageSizeChange(newQueryString);
                     const offset = (page - 1) * pageSize;
-                    // const params = `?offset=${offset}&limit=${pageSize}`;
-                    // console.log(offset);
-                    // console.log(params);
-
-                    handleChangePage(newQueryString);
                 },
             }}
+            scroll={{ x: 'max-content' }}
         />
     );
 }
-export default TableCustom;
+export const TableMemoComponent = genericMemo(TableCustom);

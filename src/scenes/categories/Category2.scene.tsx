@@ -1,5 +1,4 @@
-import React from 'react';
-import SearchCommon from '~components/inputs/SearchCommon.component';
+import SearchCommon from '~components/Inputs/SearchCommon.component';
 
 function Category2Scene() {
     return (

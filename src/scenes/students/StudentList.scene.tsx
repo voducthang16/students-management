@@ -12,7 +12,7 @@ import TaskStudentListScene from 'src/scenes/tasks/TaskStudentListScene';
 import { studentsService } from 'src/services/features';
 import { notify, queryString } from 'src/utils';
 import { PopconfirmCustom } from '~components/custom';
-import { TableMemoComponent } from '~components/custom/TableCustom/TableCustom';
+import { TableMemoComponent } from '~components/custom/TableCustom';
 import Loading from '~components/Loading';
 import { StudentForm } from '.';
 function StudentList() {

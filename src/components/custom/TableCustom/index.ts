@@ -1,1 +1,1 @@
-export { default } from './TableCustom';
+export { TableMemoComponent } from './TableCustom';

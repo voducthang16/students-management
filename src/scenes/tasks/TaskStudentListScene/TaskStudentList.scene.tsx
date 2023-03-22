@@ -10,7 +10,7 @@ import { ITask } from 'src/models/tasks.model';
 import { taskServices } from 'src/services/features/tasks.services';
 import { notify } from 'src/utils';
 import { PopconfirmCustom } from '~components/custom';
-import { TableMemoComponent } from '~components/custom/TableCustom/TableCustom';
+import { TableMemoComponent } from '~components/custom/TableCustom';
 import TaskFormScene from '../TaskFormScene';
 
 const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
