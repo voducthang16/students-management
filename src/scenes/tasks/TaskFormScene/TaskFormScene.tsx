@@ -13,12 +13,14 @@ const TaskFormScene = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
     const [form] = Form.useForm();
     const [studentId, setStudentId] = useState<string | null>();
     useImperativeHandle(ref, () => ({
-        showModal: (record) => {
+        showModal: () => {
+            setOpen(true);
+        },
+        getStudentInfo(record) {
             if (record) {
                 setStudentId(record.id);
                 form.setFieldValue('studentName', record.name);
             }
-            setOpen(true);
         },
     }));
 

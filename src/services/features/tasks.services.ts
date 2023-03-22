@@ -10,4 +10,9 @@ export const taskServices = {
             headers,
         });
     },
+    getStudentsTask(id: string) {
+        return httpRequest.get<ITask[]>({
+            url: `students/${id}/tasks`,
+        });
+    },
 };

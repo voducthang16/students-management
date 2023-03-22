@@ -1,4 +1,6 @@
-export interface ITask {
+import { ITableData } from '..';
+
+export interface ITask extends ITableData {
     studentId: string;
     studentName: string;
     task: string;
