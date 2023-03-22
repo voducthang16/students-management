@@ -21,4 +21,9 @@ export const taskServices = {
             payload,
         });
     },
+    deleteStudentTask(studentId: string, taskId: string) {
+        return httpRequest.deleteMethod<ITask>({
+            url: `students/${studentId}/tasks/${taskId}`,
+        });
+    },
 };

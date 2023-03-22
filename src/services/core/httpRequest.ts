@@ -1,5 +1,5 @@
-import instance from './instance';
 import { IHttpRequest, NewResponse } from 'src/models';
+import instance from './instance';
 
 const get = <Type>({ url, payload, headers }: IHttpRequest) => {
     return instance.get<Type, NewResponse<Type>>(url!, {
@@ -20,10 +20,18 @@ const put = <TypeReq, TypeRes>({ url, payload, headers }: IHttpRequest<TypeReq>)
     });
 };
 
+const deleteMethod = <Type>({ url, payload, headers }: IHttpRequest) => {
+    return instance.delete<Type, NewResponse<Type>>(url!, {
+        params: payload,
+        headers,
+    });
+};
+
 const httpRequest = {
     get,
     post,
     put,
+    deleteMethod,
 };
 
 export default httpRequest;

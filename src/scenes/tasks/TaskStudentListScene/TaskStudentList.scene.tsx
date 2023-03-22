@@ -1,4 +1,5 @@
-import { Modal, Popconfirm, Switch } from 'antd';
+import { DeleteFilled } from '@ant-design/icons';
+import { Button, Modal, Popconfirm, Switch } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useState } from 'react';
@@ -8,6 +9,7 @@ import { IStudent } from 'src/models/students.model';
 import { ITask } from 'src/models/tasks.model';
 import { taskServices } from 'src/services/features/tasks.services';
 import { notify } from 'src/utils';
+import { PopconfirmCustom } from '~components/custom';
 import { TableMemoComponent } from '~components/custom/TableCustom/TableCustom';
 
 const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
@@ -76,6 +78,20 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
 
     const handlePageSizeChange = () => {};
 
+    const handleDeleteStudentTask = (studentId: string, taskId: string) => {
+        taskServices
+            .deleteStudentTask(studentId, taskId)
+            .then((res) => {
+                notify.success({
+                    message: 'Success',
+                    description: 'Delete Task Successfully',
+                    duration: 3,
+                });
+                getTaskListStudent(res.data.studentId);
+            })
+            .catch((err) => console.log(err));
+    };
+
     const columns: ColumnsType<ITask> = useMemo(() => {
         return [
             {
@@ -127,7 +143,20 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
                 title: 'Actions',
                 dataIndex: 'actions',
                 key: 'actions',
-                render: (_, record) => <div className="flex"></div>,
+                render: (_, record) => (
+                    <div className="flex">
+                        <div title="Delete Task">
+                            <PopconfirmCustom
+                                title="Sure to delete?"
+                                onConfirm={() => handleDeleteStudentTask(record.studentId, record.id)}
+                            >
+                                <Button type="ghost">
+                                    <DeleteFilled className="text-lg cursor-pointer hover:opacity-80 transition-all" />
+                                </Button>
+                            </PopconfirmCustom>
+                        </div>
+                    </div>
+                ),
                 // fixed: 'right',
             },
         ];
