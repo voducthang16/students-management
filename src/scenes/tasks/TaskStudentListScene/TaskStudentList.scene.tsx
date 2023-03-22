@@ -1,12 +1,13 @@
 import { Modal, Popconfirm, Switch } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { useState, forwardRef, ForwardedRef, useImperativeHandle, useMemo } from 'react';
+import { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import { PaginationConfig } from 'src/const';
 import { IModal, IPagination } from 'src/models';
 import { IStudent } from 'src/models/students.model';
 import { ITask } from 'src/models/tasks.model';
 import { taskServices } from 'src/services/features/tasks.services';
+import { notify } from 'src/utils';
 import { TableMemoComponent } from '~components/custom/TableCustom/TableCustom';
 
 const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
@@ -39,12 +40,38 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
                 setTaskList(res.data);
                 setTotal(res.data.length);
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                notify.success({
+                    message: 'Error',
+                    description: err,
+                    duration: 3,
+                });
+            });
     };
 
     const handleOnSwitch = (record: ITask) => {
         const newRecord = { ...record };
         newRecord.status = !newRecord.status;
+        console.log(newRecord);
+        taskServices
+            .updateStudentTask({
+                payload: newRecord,
+            })
+            .then((res) => {
+                notify.success({
+                    message: 'Success',
+                    description: 'Update Task Status Successfully',
+                    duration: 3,
+                });
+                getTaskListStudent(res.data.studentId);
+            })
+            .catch((err) => {
+                notify.success({
+                    message: 'Error',
+                    description: err,
+                    duration: 3,
+                });
+            });
     };
 
     const handlePageSizeChange = () => {};
@@ -55,11 +82,15 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
                 title: 'Task',
                 dataIndex: 'task',
                 key: 'task',
+                render: (_, record) => <span className={`${record.status ? '' : 'line-through'}`}>{record.task}</span>,
             },
             {
                 title: 'Description',
                 dataIndex: 'description',
                 key: 'description',
+                render: (_, record) => (
+                    <span className={`${record.status ? '' : 'line-through'}`}>{record.description}</span>
+                ),
             },
             {
                 title: 'Status',
@@ -115,14 +146,7 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
             <TableMemoComponent<ITask>
                 IColumns={columns}
                 IData={taskList!}
-                // pagination={{
-                //     total: total,
-                //     pageSize: +pageSize,
-                //     current: +currentPage,
-                //     pageSizeOptions: pageSizeOptions,
-                // }}
                 onChange={handlePageSizeChange}
-                // onShowSizeChange={handlePageSizeOptionsChange}
                 totalItem={total}
                 filter={filter}
             />

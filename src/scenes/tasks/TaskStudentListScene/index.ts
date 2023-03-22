@@ -1,1 +1,1 @@
-export { default } from './TaskStudentListScene';
+export { default } from './TaskStudentList.scene';

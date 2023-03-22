@@ -15,4 +15,10 @@ export const taskServices = {
             url: `students/${id}/tasks`,
         });
     },
+    updateStudentTask({ payload }) {
+        return httpRequest.put<ITask, ITask>({
+            url: `students/${payload.studentId}/tasks/${payload.id}`,
+            payload,
+        });
+    },
 };

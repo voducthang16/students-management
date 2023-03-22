@@ -112,7 +112,7 @@ function StudentList() {
         }
     };
 
-    const showTaskStudentModal = (record: IStudent) => {
+    const showTaskStudentListModal = (record: IStudent) => {
         if (taskStudentListRef.current) {
             taskStudentListRef.current.showModal();
             taskStudentListRef.current.getStudentInfo!(record);
@@ -207,7 +207,7 @@ function StudentList() {
                 width: 60,
                 render: (_, record) => (
                     <div>
-                        <Button type="primary" onClick={() => showTaskStudentModal(record)}>
+                        <Button type="primary" onClick={() => showTaskStudentListModal(record)}>
                             View All
                         </Button>
                         <TaskStudentListScene ref={taskStudentListRef} />
