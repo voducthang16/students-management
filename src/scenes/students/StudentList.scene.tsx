@@ -1,4 +1,4 @@
-import { EditFilled, PlusCircleFilled } from '@ant-design/icons';
+import { DeleteFilled, EditFilled, PlusCircleFilled } from '@ant-design/icons';
 import { Button, Image, Popconfirm, Switch, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
@@ -11,6 +11,7 @@ import TaskFormScene from 'src/scenes/tasks/TaskFormScene';
 import TaskStudentListScene from 'src/scenes/tasks/TaskStudentListScene';
 import { studentsService } from 'src/services/features';
 import { notify, queryString } from 'src/utils';
+import { PopconfirmCustom } from '~components/custom';
 import { TableMemoComponent } from '~components/custom/TableCustom/TableCustom';
 import Loading from '~components/Loading';
 import { StudentForm } from '.';
@@ -117,6 +118,26 @@ function StudentList() {
             taskStudentListRef.current.showModal();
             taskStudentListRef.current.getStudentInfo!(record);
         }
+    };
+
+    const handleDeleteStudent = (id: string) => {
+        studentsService
+            .delete(id)
+            .then(() => {
+                notify.success({
+                    message: 'Success',
+                    description: 'Delete Task Successfully',
+                    duration: 3,
+                });
+                getStudents();
+            })
+            .catch((err) => {
+                notify.success({
+                    message: 'Error',
+                    description: err,
+                    duration: 3,
+                });
+            });
     };
 
     const columns: ColumnsType<IStudent> = useMemo(() => {
@@ -253,6 +274,13 @@ function StudentList() {
                                 <PlusCircleFilled className="text-lg cursor-pointer hover:opacity-80 transition-all" />
                             </Button>
                             <TaskFormScene ref={taskFormRef} />
+                        </div>
+                        <div title="Delete Student">
+                            <PopconfirmCustom title="Sure to delete?" onConfirm={() => handleDeleteStudent(record.id)}>
+                                <Button type="ghost">
+                                    <DeleteFilled className="text-lg cursor-pointer hover:opacity-80 transition-all" />
+                                </Button>
+                            </PopconfirmCustom>
                         </div>
                     </div>
                 ),

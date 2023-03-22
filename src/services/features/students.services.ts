@@ -1,7 +1,7 @@
-import httpRequest from '../core/httpRequest';
-import { IStudent } from 'src/models/students.model';
 import { IHttpRequest } from 'src/models';
+import { IStudent } from 'src/models/students.model';
 import { queryString } from 'src/utils';
+import httpRequest from '../core/httpRequest';
 export const studentsService = {
     getAll({ filter }: IHttpRequest) {
         const query = queryString({ filter });
@@ -25,6 +25,11 @@ export const studentsService = {
         return httpRequest.put<IStudent, IStudent>({
             url: `students/${payload?.id}`,
             payload,
+        });
+    },
+    delete(id: string) {
+        return httpRequest.deleteMethod<IStudent>({
+            url: `students/${id}`,
         });
     },
 };
