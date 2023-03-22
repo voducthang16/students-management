@@ -1,17 +1,19 @@
-import { useState, forwardRef, ForwardedRef, useImperativeHandle, useRef } from 'react';
-import { Form, Input, Modal, Switch, Select } from 'antd';
+import { Form, Input, Modal, Switch } from 'antd';
+import { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
 import { IModal } from 'src/models';
 import { ITask } from 'src/models/tasks.model';
 import { taskServices } from 'src/services/features/tasks.services';
 import { notify } from 'src/utils';
 interface IProps {
-    onChange?: () => void;
+    onChange?: (studentId: string) => void;
 }
 
 const TaskFormScene = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
+    const { onChange } = props;
     const [open, setOpen] = useState(false);
     const [form] = Form.useForm();
     const [studentId, setStudentId] = useState<string | null>();
+    const [taskId, setTaskId] = useState<string | undefined>();
     useImperativeHandle(ref, () => ({
         showModal: () => {
             setOpen(true);
@@ -22,7 +24,25 @@ const TaskFormScene = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
                 form.setFieldValue('studentName', record.name);
             }
         },
+        getTaskInfo(record) {
+            if (record) {
+                setTaskId(record.id);
+                setStudentId(record.studentId);
+                getDetailTask(record.studentId, record.id);
+            }
+        },
     }));
+
+    const setFormValues = (data: ITask) => {
+        form.setFieldsValue(data);
+    };
+
+    const getDetailTask = (studentId: string, taskId: string) => {
+        taskServices
+            .getDetailTask(studentId, taskId)
+            .then((res) => setFormValues(res.data))
+            .catch((err) => console.log(err));
+    };
 
     const createTask = (values: ITask) => {
         taskServices
@@ -40,6 +60,30 @@ const TaskFormScene = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
             });
     };
 
+    const updateTask = (values: ITask) => {
+        const newValues = {
+            ...values,
+            studentId: studentId,
+            id: taskId,
+        };
+        taskServices
+            .updateStudentTask({
+                payload: newValues,
+            })
+            .then((res) => {
+                console.log(res);
+
+                notify.success({
+                    message: 'Success',
+                    description: 'Update Task Successfully',
+                    duration: 3,
+                });
+                setOpen(false);
+                onChange?.(res.data.studentId);
+            })
+            .catch((err) => console.log(err));
+    };
+
     const handleOnOk = () => {
         form.validateFields()
             .then((values) => {
@@ -52,13 +96,13 @@ const TaskFormScene = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
     };
 
     const onFormSubmit = (values: ITask) => {
-        createTask(values);
+        taskId ? updateTask(values) : createTask(values);
     };
 
     return (
         <Modal
             open={open}
-            title={`Create Task`}
+            title={`${taskId ? 'Update' : 'Create'} Task`}
             okText="Save"
             cancelText="Cancel"
             onCancel={() => setOpen(false)}

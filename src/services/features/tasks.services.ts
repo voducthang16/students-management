@@ -15,6 +15,11 @@ export const taskServices = {
             url: `students/${id}/tasks`,
         });
     },
+    getDetailTask(studentId: string, taskId: string) {
+        return httpRequest.get<ITask>({
+            url: `students/${studentId}/tasks/${taskId}`,
+        });
+    },
     updateStudentTask({ payload }) {
         return httpRequest.put<ITask, ITask>({
             url: `students/${payload.studentId}/tasks/${payload.id}`,

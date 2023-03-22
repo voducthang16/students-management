@@ -1,8 +1,8 @@
-import { DeleteFilled } from '@ant-design/icons';
+import { DeleteFilled, EditFilled } from '@ant-design/icons';
 import { Button, Modal, Popconfirm, Switch } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useState } from 'react';
+import { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { PaginationConfig } from 'src/const';
 import { IModal, IPagination } from 'src/models';
 import { IStudent } from 'src/models/students.model';
@@ -11,6 +11,7 @@ import { taskServices } from 'src/services/features/tasks.services';
 import { notify } from 'src/utils';
 import { PopconfirmCustom } from '~components/custom';
 import { TableMemoComponent } from '~components/custom/TableCustom/TableCustom';
+import TaskFormScene from '../TaskFormScene';
 
 const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
     const [open, setOpen] = useState(false);
@@ -20,6 +21,8 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
 
     const param = new PaginationConfig(1, 3);
     const [filter, setFilter] = useState<IPagination>({ ...param });
+
+    const taskFormRef = useRef<IModal>(null);
 
     useImperativeHandle(ref, () => ({
         showModal: () => {
@@ -31,8 +34,6 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
                 getTaskListStudent(record.id);
             }
         },
-        // getTaskInfo(record) {
-        // },
     }));
 
     const getTaskListStudent = (id: string) => {
@@ -54,7 +55,6 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
     const handleOnSwitch = (record: ITask) => {
         const newRecord = { ...record };
         newRecord.status = !newRecord.status;
-        console.log(newRecord);
         taskServices
             .updateStudentTask({
                 payload: newRecord,
@@ -90,6 +90,13 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
                 getTaskListStudent(res.data.studentId);
             })
             .catch((err) => console.log(err));
+    };
+
+    const showTaskModal = (record: ITask) => {
+        if (taskFormRef.current) {
+            taskFormRef.current.showModal();
+            taskFormRef.current.getTaskInfo!(record);
+        }
     };
 
     const columns: ColumnsType<ITask> = useMemo(() => {
@@ -145,6 +152,17 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
                 key: 'actions',
                 render: (_, record) => (
                     <div className="flex">
+                        <div title="Edit Task">
+                            <Button
+                                type="ghost"
+                                onClick={() => {
+                                    showTaskModal(record);
+                                }}
+                            >
+                                <EditFilled className="text-lg cursor-pointer hover:opacity-80 transition-all" />
+                            </Button>
+                            <TaskFormScene onChange={getTaskListStudent} ref={taskFormRef} />
+                        </div>
                         <div title="Delete Task">
                             <PopconfirmCustom
                                 title="Sure to delete?"
