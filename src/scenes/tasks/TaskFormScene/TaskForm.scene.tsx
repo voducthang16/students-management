@@ -37,6 +37,10 @@ const TaskFormScene = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
         form.setFieldsValue(data);
     };
 
+    const resetFormValues = () => {
+        form.resetFields();
+    };
+
     const getDetailTask = (studentId: string, taskId: string) => {
         taskServices
             .getDetailTask(studentId, taskId)
@@ -88,7 +92,7 @@ const TaskFormScene = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
         form.validateFields()
             .then((values) => {
                 onFormSubmit(values);
-                form.resetFields();
+                resetFormValues();
             })
             .catch((info) => {
                 console.log('Validate Failed:', info);
@@ -99,13 +103,24 @@ const TaskFormScene = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
         taskId ? updateTask(values) : createTask(values);
     };
 
+    const validateInput = (rule, value) => {
+        if (value && value.trim().length !== 0) {
+            return Promise.resolve();
+        } else {
+            return Promise.reject('Field do not empty!!!!!');
+        }
+    };
+
     return (
         <Modal
             open={open}
             title={`${taskId ? 'Update' : 'Create'} Task`}
             okText="Save"
             cancelText="Cancel"
-            onCancel={() => setOpen(false)}
+            onCancel={() => {
+                setOpen(false);
+                resetFormValues();
+            }}
             onOk={handleOnOk}
             bodyStyle={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)', paddingRight: '16px' }}
             centered
@@ -114,10 +129,28 @@ const TaskFormScene = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
                 <Form.Item name="studentName" label="Student Name">
                     <Input readOnly />
                 </Form.Item>
-                <Form.Item name="task" label="Task Name" required>
+                <Form.Item
+                    name="task"
+                    label="Task Name"
+                    required
+                    rules={[
+                        {
+                            validator: validateInput,
+                        },
+                    ]}
+                >
                     <Input />
                 </Form.Item>
-                <Form.Item name="description" label="Task Description" required>
+                <Form.Item
+                    name="description"
+                    label="Task Description"
+                    required
+                    rules={[
+                        {
+                            validator: validateInput,
+                        },
+                    ]}
+                >
                     <Input />
                 </Form.Item>
                 <Form.Item name="status" label="Status" valuePropName="checked" initialValue={true}>

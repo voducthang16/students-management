@@ -100,7 +100,7 @@ const FormStudent = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
     };
 
     const validateInput = (rule, value, callback, message) => {
-        if (value && value.toString().trim() !== 0) {
+        if (value && value.toString().trim().length !== 0) {
             const valid = callback(rule, value);
             if (valid) {
                 return Promise.resolve();
