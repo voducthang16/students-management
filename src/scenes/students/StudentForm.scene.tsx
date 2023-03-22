@@ -148,9 +148,7 @@ const FormStudent = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
     };
 
     const onFormSubmit = (values: IStudent) => {
-        console.log(values);
-
-        // +studentId! > 0 ? updatedStudent(values) : createStudent(values);
+        +studentId! > 0 ? updatedStudent(values) : createStudent(values);
     };
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
