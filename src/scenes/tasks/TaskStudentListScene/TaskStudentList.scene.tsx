@@ -12,7 +12,7 @@ import { taskServices } from 'src/services/features/tasks.services';
 import { notify } from 'src/utils';
 import { PopconfirmCustom } from '~components/custom';
 import { TableMemoComponent } from '~components/custom/TableCustom';
-import { toggle } from '~store/slice/loading.slice';
+import { turnOff, turnOn } from '~store/slice/loading.slice';
 import TaskFormScene from '../TaskFormScene';
 
 const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
@@ -46,7 +46,7 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
             .then((res) => {
                 setTaskList(res.data);
 
-                dispatch(toggle());
+                dispatch(turnOff());
             })
             .catch((err) => {
                 notify.success({
@@ -91,7 +91,7 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
     };
 
     const handlePageSizeChange = (filter: IPagination) => {
-        dispatch(toggle());
+        dispatch(turnOn());
         setFilter(filter);
         getTaskListStudent(studentInfo!.id, filter);
         setPageSize(+filter.limit);

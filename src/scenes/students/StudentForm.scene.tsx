@@ -6,7 +6,7 @@ import { IModal } from 'src/models';
 import { IStudent } from 'src/models/students.model';
 import { studentsService } from 'src/services/features';
 import { notify, slugify } from 'src/utils';
-import { toggle } from '~store/slice/loading.slice';
+import { turnOff, turnOn } from '~store/slice/loading.slice';
 
 interface IProps {
     onChange?: () => void;
@@ -26,7 +26,7 @@ const FormStudent = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
             .getOne(id)
             .then((res) => {
                 setFormValues(res.data);
-                dispatch(toggle());
+                dispatch(turnOff());
             })
             .catch(() => {
                 notify.error({
@@ -125,7 +125,6 @@ const FormStudent = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
                 payload: values,
             })
             .then(() => {
-                onChange?.();
                 notify.success({
                     message: 'Success',
                     description: 'Create Student Success',
@@ -136,7 +135,7 @@ const FormStudent = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
     };
 
     const updatedStudent = (values: IStudent) => {
-        dispatch(toggle());
+        dispatch(turnOn());
         studentsService
             .put({
                 payload: {

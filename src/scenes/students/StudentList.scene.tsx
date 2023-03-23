@@ -23,7 +23,7 @@ import { studentsService } from 'src/services/features';
 import { notify, queryString } from 'src/utils';
 import { PopconfirmCustom } from '~components/custom';
 import { TableMemoComponent } from '~components/custom/TableCustom';
-import { toggle } from '~store/slice/loading.slice';
+import { turnOff, turnOn } from '~store/slice/loading.slice';
 import { StudentForm } from '.';
 
 export interface IStudentListRef {
@@ -56,12 +56,12 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
 
     useImperativeHandle(ref, () => ({
         onSearch: (params: IPagination) => {
+            dispatch(turnOn());
             handleSearch(params);
         },
     }));
 
     const handleSearch = (params: IPagination) => {
-        dispatch(toggle());
         getStudents(params);
         clearInputSearch?.();
     };
@@ -81,7 +81,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
             } else {
                 getTotalStudent();
             }
-            dispatch(toggle());
+            dispatch(turnOff());
         });
     };
 
@@ -116,7 +116,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
     };
 
     const handleOnSwitch = (record: IStudent) => {
-        dispatch(toggle());
+        dispatch(turnOn());
         const newRecord = { ...record };
         newRecord.sex = !newRecord.sex;
         studentsService
@@ -156,7 +156,6 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
     };
 
     const handleDeleteStudent = (id: string) => {
-        dispatch(toggle());
         studentsService
             .delete(id)
             .then(() => {
@@ -269,7 +268,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                             type="primary"
                             onClick={() => {
                                 showTaskStudentListModal(record);
-                                dispatch(toggle());
+                                dispatch(turnOn());
                             }}
                         >
                             View All
@@ -301,7 +300,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                                 type="ghost"
                                 onClick={() => {
                                     showStudentModal(record);
-                                    dispatch(toggle());
+                                    dispatch(turnOn());
                                 }}
                             >
                                 <EditFilled className="text-lg cursor-pointer hover:opacity-80 transition-all" />
@@ -320,7 +319,13 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                             <TaskFormScene ref={taskFormRef} />
                         </div>
                         <div title="Delete Student">
-                            <PopconfirmCustom title="Sure to delete?" onConfirm={() => handleDeleteStudent(record.id)}>
+                            <PopconfirmCustom
+                                title="Sure to delete?"
+                                onConfirm={() => {
+                                    dispatch(turnOn());
+                                    handleDeleteStudent(record.id);
+                                }}
+                            >
                                 <Button type="ghost">
                                     <DeleteFilled className="text-lg cursor-pointer hover:opacity-80 transition-all" />
                                 </Button>
@@ -334,9 +339,9 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
     }, []);
 
     const handlePageSizeChange = useCallback((filter: IPagination) => {
+        dispatch(turnOn());
         getStudents(filter);
         setFilter(filter);
-        dispatch(toggle());
         const query = queryString({ filter });
         navigate(`/${query}`);
     }, []);

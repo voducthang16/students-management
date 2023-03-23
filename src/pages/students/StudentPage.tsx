@@ -21,7 +21,7 @@ function StudentPage() {
     };
 
     return (
-        <div className="bg-white relative overflow-hidden">
+        <div className="bg-white relative overflow-hidden rounded-lg shadow-lg">
             <div className="flex items-center justify-between p-4">
                 <div className="w-1/2">
                     <StudentSearch onChange={handleSearch} ref={studentSearchRef} />

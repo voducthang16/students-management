@@ -9,12 +9,15 @@ export const loadingSlice = createSlice({
     name: 'students',
     initialState,
     reducers: {
-        toggle: (state) => {
-            state.status = !state.status;
+        turnOff: (state) => {
+            state.status = false;
+        },
+        turnOn: (state) => {
+            state.status = true;
         },
     },
 });
 
-export const { toggle } = loadingSlice.actions;
+export const { turnOff, turnOn } = loadingSlice.actions;
 export const status = (state: RootState) => state.loading.status;
 export default loadingSlice.reducer;
