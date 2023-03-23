@@ -1,8 +1,10 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
+import loadingSlice from './slice/loading.slice';
 import studentsSlice from './slice/students-slice';
 export const store = configureStore({
     reducer: {
         students: studentsSlice,
+        loading: loadingSlice,
     },
 });
 

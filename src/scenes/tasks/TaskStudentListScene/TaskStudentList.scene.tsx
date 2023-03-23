@@ -4,6 +4,7 @@ import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { PaginationConfig } from 'src/const';
+import { useAppDispatch } from 'src/hooks';
 import { IModal, IPagination } from 'src/models';
 import { IStudent } from 'src/models/students.model';
 import { ITask } from 'src/models/tasks.model';
@@ -11,9 +12,11 @@ import { taskServices } from 'src/services/features/tasks.services';
 import { notify } from 'src/utils';
 import { PopconfirmCustom } from '~components/custom';
 import { TableMemoComponent } from '~components/custom/TableCustom';
+import { toggle } from '~store/slice/loading.slice';
 import TaskFormScene from '../TaskFormScene';
 
 const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
+    const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const [studentInfo, setStudentInfo] = useState<IStudent>();
     const [taskList, setTaskList] = useState<ITask[]>();
@@ -42,6 +45,7 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
             .then((res) => {
                 setTaskList(res.data);
                 setTotal(res.data.length);
+                dispatch(toggle());
             })
             .catch((err) => {
                 notify.success({

@@ -1,10 +1,12 @@
 import type { SelectProps } from 'antd';
 import { Form, Input, Modal, Select, Switch } from 'antd';
 import { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
+import { useAppDispatch } from 'src/hooks';
 import { IModal } from 'src/models';
 import { IStudent } from 'src/models/students.model';
 import { studentsService } from 'src/services/features';
 import { notify, slugify } from 'src/utils';
+import { toggle } from '~store/slice/loading.slice';
 
 interface IProps {
     onChange?: () => void;
@@ -17,10 +19,15 @@ const FormStudent = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
     const [isReadOnly, setIsReadOnly] = useState(true);
     const [studentId, setStudentId] = useState<string | undefined>();
 
+    const dispatch = useAppDispatch();
+
     const getDetailStudent = (id: string | number) => {
         studentsService
             .getOne(id)
-            .then((res) => setFormValues(res.data))
+            .then((res) => {
+                setFormValues(res.data);
+                dispatch(toggle());
+            })
             .catch(() => {
                 notify.error({
                     message: 'Error',

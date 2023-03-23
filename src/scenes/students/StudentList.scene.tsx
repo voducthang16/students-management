@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PaginationConfig } from 'src/const';
+import { useAppDispatch } from 'src/hooks';
 import { IModal, IPagination } from 'src/models';
 import { IStudent } from 'src/models/students.model';
 import TaskFormScene from 'src/scenes/tasks/TaskFormScene';
@@ -13,11 +14,10 @@ import { studentsService } from 'src/services/features';
 import { notify, queryString } from 'src/utils';
 import { PopconfirmCustom } from '~components/custom';
 import { TableMemoComponent } from '~components/custom/TableCustom';
-import Loading from '~components/Loading';
+import { toggle } from '~store/slice/loading.slice';
 import { StudentForm } from '.';
 function StudentList() {
-    const [loading, setLoading] = useState<boolean>(false);
-
+    const dispatch = useAppDispatch();
     const [list, setList] = useState<IStudent[]>();
     const [total, setTotal] = useState<number>(0);
 
@@ -29,12 +29,10 @@ function StudentList() {
     // PARAMS URL
     const [filter, setFilter] = useState<IPagination>({ ...param });
 
-    // const [pageSize, setPageSize] = useState<number>(paginationConfig.limit);
-    // const [pageSizeOptions, setPageSizeOptions] = useState(TablePagination.pageSizeOptions);
-
     const navigate = useNavigate();
     const location = useLocation();
     const params = location.search;
+    const currentPage = new URLSearchParams(params).get('page') || 1;
 
     useEffect(() => {
         let queryString: string | IPagination = filter;
@@ -44,10 +42,10 @@ function StudentList() {
     }, []);
 
     const getStudents = (filterCurrent: string | IPagination = filter) => {
-        setLoading(false);
+        // dispatch(toggle());
         studentsService.getAll({ filter: filterCurrent }).then((res) => {
             setList(res.data);
-            setLoading(true);
+            dispatch(toggle());
         });
     };
 
@@ -228,7 +226,13 @@ function StudentList() {
                 width: 60,
                 render: (_, record) => (
                     <div>
-                        <Button type="primary" onClick={() => showTaskStudentListModal(record)}>
+                        <Button
+                            type="primary"
+                            onClick={() => {
+                                showTaskStudentListModal(record);
+                                dispatch(toggle());
+                            }}
+                        >
                             View All
                         </Button>
                         <TaskStudentListScene ref={taskStudentListRef} />
@@ -258,6 +262,7 @@ function StudentList() {
                                 type="ghost"
                                 onClick={() => {
                                     showStudentModal(record);
+                                    dispatch(toggle());
                                 }}
                             >
                                 <EditFilled className="text-lg cursor-pointer hover:opacity-80 transition-all" />
@@ -305,39 +310,22 @@ function StudentList() {
         const query = queryString({ filter });
         navigate(`/${query}`);
         setFilter(filter);
+        dispatch(toggle());
         // setPageSize(+filter.limit);
     }, []);
 
-    // const handlePageSizeOptionsChange = (current: number, size: number) => {
-    //     setPageSizeOptions([`${size}`, '20', '50', '100']);
-    //     setPageSize(size);
-    // };
-
     return (
-        <>
-            {loading ? (
-                <>
-                    <TableMemoComponent<IStudent>
-                        IColumns={columns}
-                        IData={list!}
-                        // pagination={{
-                        //     total: total,
-                        //     pageSize: +pageSize,
-                        //     current: +currentPage,
-                        //     pageSizeOptions: pageSizeOptions,
-                        // }}
-                        onChange={handlePageSizeChange}
-                        // onShowSizeChange={handlePageSizeOptionsChange}
-                        filter={filter}
-                        totalItem={total}
-                    />
-                    <button onClick={() => setTotal(10)}>change</button>
-                </>
-            ) : (
-                <Loading />
-            )}
-            <button onClick={() => setStatus(!status)}>BUTTON</button>
-        </>
+        <TableMemoComponent<IStudent>
+            IColumns={columns}
+            IData={list!}
+            pagination={{
+                current: +currentPage,
+            }}
+            onChange={handlePageSizeChange}
+            // onShowSizeChange={handlePageSizeOptionsChange}
+            filter={filter}
+            totalItem={total}
+        />
     );
 }
 
