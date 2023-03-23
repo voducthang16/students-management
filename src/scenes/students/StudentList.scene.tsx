@@ -70,7 +70,6 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
         let queryString: string | IPagination = filter;
         if (params.length !== 0) queryString = params;
         getStudents(queryString);
-        getTotalStudent();
     }, []);
 
     const getStudents = (filterCurrent: string | IPagination = filter) => {
@@ -78,6 +77,9 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
             setList(res.data);
             if (typeof filterCurrent !== 'string' && 'search' in (filterCurrent as IPagination)) {
                 setTotal(res.data.length);
+                navigate('/');
+            } else {
+                getTotalStudent();
             }
             dispatch(toggle());
         });
@@ -114,6 +116,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
     };
 
     const handleOnSwitch = (record: IStudent) => {
+        dispatch(toggle());
         const newRecord = { ...record };
         newRecord.sex = !newRecord.sex;
         studentsService
@@ -153,6 +156,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
     };
 
     const handleDeleteStudent = (id: string) => {
+        dispatch(toggle());
         studentsService
             .delete(id)
             .then(() => {
@@ -330,7 +334,6 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
 
     const handlePageSizeChange = useCallback((filter: IPagination) => {
         getStudents(filter);
-        getTotalStudent();
         setFilter(filter);
         dispatch(toggle());
         const query = queryString({ filter });

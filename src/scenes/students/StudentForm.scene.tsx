@@ -125,6 +125,7 @@ const FormStudent = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
                 payload: values,
             })
             .then(() => {
+                onChange?.();
                 notify.success({
                     message: 'Success',
                     description: 'Create Student Success',
@@ -135,6 +136,7 @@ const FormStudent = forwardRef((props: IProps, ref: ForwardedRef<IModal>) => {
     };
 
     const updatedStudent = (values: IStudent) => {
+        dispatch(toggle());
         studentsService
             .put({
                 payload: {
