@@ -10,8 +10,6 @@ export const loadingSlice = createSlice({
     initialState,
     reducers: {
         toggle: (state) => {
-            console.log(state.status);
-
             state.status = !state.status;
         },
     },

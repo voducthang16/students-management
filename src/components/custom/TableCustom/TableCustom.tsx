@@ -1,15 +1,16 @@
 import { Table } from 'antd';
-import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
+import type { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table';
 import { memo, useMemo } from 'react';
 import { TablePagination } from 'src/config/TablePagination';
 import { PaginationConfig } from 'src/const';
 import { IPagination, ITableData } from 'src/models';
 
-interface ITableCustom<T> {
+interface ITableCustom<T> extends TableProps<T> {
     IColumns: ColumnsType<T>;
     IData: T[];
     pagination?: TablePaginationConfig;
-    onChange: (filter: IPagination) => void;
+    onTableChange: (filter: IPagination) => void;
+    // onChange: (filter: IPagination) => void;
     filter: IPagination;
     totalItem: number;
 }
@@ -20,7 +21,7 @@ function TableCustom<T extends ITableData>({
     IColumns,
     IData,
     pagination,
-    onChange: handlePageSizeChange,
+    onTableChange: handlePageSizeChange,
     filter,
     totalItem,
 }: ITableCustom<T>) {
@@ -34,7 +35,6 @@ function TableCustom<T extends ITableData>({
             pagination={{
                 ...TablePagination,
                 ...pagination,
-                pageSize: +limit,
                 total: totalItem,
                 onChange: (page, pageSize) => {
                     const newQueryString = { ...newParams, page, limit: pageSize };

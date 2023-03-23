@@ -1,5 +1,6 @@
 import { IHttpRequest } from 'src/models';
 import { ITask } from 'src/models/tasks.model/tasks.model';
+import { queryString } from 'src/utils';
 import httpRequest from '../core/httpRequest';
 
 export const taskServices = {
@@ -10,9 +11,10 @@ export const taskServices = {
             headers,
         });
     },
-    getStudentsTask(id: string) {
+    getStudentsTask(id: string, { filter }: IHttpRequest) {
+        const query = queryString({ filter });
         return httpRequest.get<ITask[]>({
-            url: `students/${id}/tasks`,
+            url: `students/${id}/tasks${query}`,
         });
     },
     getDetailTask(studentId: string, taskId: string) {

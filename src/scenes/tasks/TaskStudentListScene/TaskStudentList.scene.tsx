@@ -24,7 +24,7 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
 
     const param = new PaginationConfig(1, 3);
     const [filter, setFilter] = useState<IPagination>({ ...param });
-
+    const [pageSize, setPageSize] = useState(3);
     const taskFormRef = useRef<IModal>(null);
 
     useImperativeHandle(ref, () => ({
@@ -34,17 +34,18 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
         getStudentInfo(record) {
             setStudentInfo(record);
             if (record) {
-                getTaskListStudent(record.id);
+                getTaskListStudent(record.id, filter);
+                getAllTasksStudent(record.id);
             }
         },
     }));
 
-    const getTaskListStudent = (id: string) => {
+    const getTaskListStudent = (id: string, filterCurrent: IPagination = filter) => {
         taskServices
-            .getStudentsTask(id)
+            .getStudentsTask(id, { filter: filterCurrent })
             .then((res) => {
                 setTaskList(res.data);
-                setTotal(res.data.length);
+
                 dispatch(toggle());
             })
             .catch((err) => {
@@ -54,6 +55,15 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
                     duration: 3,
                 });
             });
+    };
+
+    const getAllTasksStudent = (id: string) => {
+        taskServices
+            .getStudentsTask(id, {})
+            .then((res) => {
+                setTotal(res.data.length);
+            })
+            .catch((err) => console.log(err));
     };
 
     const handleOnSwitch = (record: ITask) => {
@@ -80,7 +90,12 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
             });
     };
 
-    const handlePageSizeChange = () => {};
+    const handlePageSizeChange = (filter: IPagination) => {
+        dispatch(toggle());
+        setFilter(filter);
+        getTaskListStudent(studentInfo!.id, filter);
+        setPageSize(+filter.limit);
+    };
 
     const handleDeleteStudentTask = (studentId: string, taskId: string) => {
         taskServices
@@ -187,9 +202,10 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
         <Modal
             open={open}
             title={`Task List Student - ${studentInfo && studentInfo!.name}`}
-            okText="Save"
-            cancelText="Cancel"
+            // okText="Save"
+            // cancelText="Cancel"
             onCancel={() => setOpen(false)}
+            footer={null}
             centered
             width={800}
             bodyStyle={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)', paddingRight: '16px' }}
@@ -197,7 +213,10 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
             <TableMemoComponent<ITask>
                 IColumns={columns}
                 IData={taskList!}
-                onChange={handlePageSizeChange}
+                pagination={{
+                    pageSize: pageSize,
+                }}
+                onTableChange={handlePageSizeChange}
                 totalItem={total}
                 filter={filter}
             />

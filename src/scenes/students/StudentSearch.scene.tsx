@@ -1,19 +1,28 @@
 import { SearchOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
-import { useState } from 'react';
+import { forwardRef, useImperativeHandle, useState } from 'react';
+import { IPagination } from 'src/models';
 
 interface ISearch {
-    onChange: (keyword: string) => void;
+    onChange: (param: IPagination) => void;
 }
 
-function StudentSearchScene({ onChange }: ISearch) {
+const StudentSearchScene = forwardRef(({ onChange }: ISearch, ref) => {
     const [searchText, setSearchText] = useState<string>('');
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(e.target.value);
     };
     const handleSearch = () => {
-        onChange(searchText);
+        onChange({
+            search: searchText,
+        });
     };
+    useImperativeHandle(ref, () => ({
+        clearInput: () => {
+            setSearchText('');
+        },
+    }));
+
     return (
         <>
             <Input
@@ -25,6 +34,6 @@ function StudentSearchScene({ onChange }: ISearch) {
             />
         </>
     );
-}
+});
 
 export default StudentSearchScene;

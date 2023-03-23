@@ -2,7 +2,16 @@ import { DeleteFilled, EditFilled, PlusCircleFilled } from '@ant-design/icons';
 import { Button, Image, Popconfirm, Switch, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    ForwardedRef,
+    forwardRef,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PaginationConfig } from 'src/const';
 import { useAppDispatch } from 'src/hooks';
@@ -16,7 +25,17 @@ import { PopconfirmCustom } from '~components/custom';
 import { TableMemoComponent } from '~components/custom/TableCustom';
 import { toggle } from '~store/slice/loading.slice';
 import { StudentForm } from '.';
-function StudentList() {
+
+export interface IStudentListRef {
+    onSearch: (params: IPagination) => void;
+}
+
+interface IStudentProps {
+    clearInputSearch?: () => void;
+}
+
+const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudentListRef>) => {
+    const { clearInputSearch } = props;
     const dispatch = useAppDispatch();
     const [list, setList] = useState<IStudent[]>();
     const [total, setTotal] = useState<number>(0);
@@ -24,7 +43,7 @@ function StudentList() {
     const taskFormRef = useRef<IModal>(null);
     const studentForm = useRef<IModal>(null);
     const taskStudentListRef = useRef<IModal>(null);
-    const param = new PaginationConfig(1, 3);
+    const param = new PaginationConfig(1, 5);
 
     // PARAMS URL
     const [filter, setFilter] = useState<IPagination>({ ...param });
@@ -33,6 +52,19 @@ function StudentList() {
     const location = useLocation();
     const params = location.search;
     const currentPage = new URLSearchParams(params).get('page') || 1;
+    const pageSize = new URLSearchParams(params).get('limit') || 5;
+
+    useImperativeHandle(ref, () => ({
+        onSearch: (params: IPagination) => {
+            handleSearch(params);
+        },
+    }));
+
+    const handleSearch = (params: IPagination) => {
+        dispatch(toggle());
+        getStudents(params);
+        clearInputSearch?.();
+    };
 
     useEffect(() => {
         let queryString: string | IPagination = filter;
@@ -42,9 +74,11 @@ function StudentList() {
     }, []);
 
     const getStudents = (filterCurrent: string | IPagination = filter) => {
-        // dispatch(toggle());
         studentsService.getAll({ filter: filterCurrent }).then((res) => {
             setList(res.data);
+            if (typeof filterCurrent !== 'string' && 'search' in (filterCurrent as IPagination)) {
+                setTotal(res.data.length);
+            }
             dispatch(toggle());
         });
     };
@@ -294,39 +328,27 @@ function StudentList() {
         ];
     }, []);
 
-    // const handleNewPageSizeOptions = (dataLength?: number) => {
-    //     const pageCount = Math.ceil(dataLength! / pageSize);
-    //     const newPageSizeOptions: string[] = [];
-    //     for (let i = 1; i <= pageCount; i++) {
-    //         newPageSizeOptions.push(`${i * pageSize}`);
-    //     }
-    //     setPageSizeOptions(newPageSizeOptions);
-    // };
-
-    const [status, setStatus] = useState(false);
-
     const handlePageSizeChange = useCallback((filter: IPagination) => {
         getStudents(filter);
-        const query = queryString({ filter });
-        navigate(`/${query}`);
+        getTotalStudent();
         setFilter(filter);
         dispatch(toggle());
-        // setPageSize(+filter.limit);
+        const query = queryString({ filter });
+        navigate(`/${query}`);
     }, []);
-
     return (
         <TableMemoComponent<IStudent>
             IColumns={columns}
             IData={list!}
             pagination={{
                 current: +currentPage,
+                pageSize: +pageSize,
             }}
-            onChange={handlePageSizeChange}
-            // onShowSizeChange={handlePageSizeOptionsChange}
+            onTableChange={handlePageSizeChange}
             filter={filter}
             totalItem={total}
         />
     );
-}
+});
 
 export default StudentList;
