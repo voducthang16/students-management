@@ -1,5 +1,5 @@
 import { DeleteFilled, EditFilled } from '@ant-design/icons';
-import { Button, Modal, Popconfirm, Switch } from 'antd';
+import { Button, Modal, Popconfirm, Skeleton, Switch } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
@@ -17,6 +17,7 @@ import TaskFormScene from '../TaskFormScene';
 
 const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
     const dispatch = useAppDispatch();
+    const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
     const [studentInfo, setStudentInfo] = useState<IStudent>();
     const [taskList, setTaskList] = useState<ITask[]>();
@@ -45,8 +46,8 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
             .getStudentsTask(id, { filter: filterCurrent })
             .then((res) => {
                 setTaskList(res.data);
-
                 dispatch(turnOff());
+                setLoading(false);
             })
             .catch((err) => {
                 notify.success({
@@ -202,24 +203,26 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
         <Modal
             open={open}
             title={`Task List Student - ${studentInfo && studentInfo!.name}`}
-            // okText="Save"
-            // cancelText="Cancel"
             onCancel={() => setOpen(false)}
             footer={null}
             centered
             width={800}
             bodyStyle={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)', paddingRight: '16px' }}
         >
-            <TableMemoComponent<ITask>
-                IColumns={columns}
-                IData={taskList!}
-                pagination={{
-                    pageSize: pageSize,
-                }}
-                onTableChange={handlePageSizeChange}
-                totalItem={total}
-                filter={filter}
-            />
+            {loading ? (
+                <Skeleton avatar paragraph={{ rows: 5 }} />
+            ) : (
+                <TableMemoComponent<ITask>
+                    IColumns={columns}
+                    IData={taskList!}
+                    pagination={{
+                        pageSize: pageSize,
+                    }}
+                    onTableChange={handlePageSizeChange}
+                    totalItem={total}
+                    filter={filter}
+                />
+            )}
         </Modal>
     );
 });

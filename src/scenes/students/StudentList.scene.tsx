@@ -1,5 +1,5 @@
 import { DeleteFilled, EditFilled, PlusCircleFilled } from '@ant-design/icons';
-import { Button, Image, Popconfirm, Switch, Tag } from 'antd';
+import { Button, Image, Popconfirm, Skeleton, Switch, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import {
@@ -35,6 +35,7 @@ interface IStudentProps {
 }
 
 const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudentListRef>) => {
+    const [loading, setLoading] = useState(true);
     const { clearInputSearch } = props;
     const dispatch = useAppDispatch();
     const [list, setList] = useState<IStudent[]>();
@@ -82,6 +83,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                 getTotalStudent();
             }
             dispatch(turnOff());
+            setLoading(false);
         });
     };
 
@@ -346,17 +348,23 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
         navigate(`/${query}`);
     }, []);
     return (
-        <TableMemoComponent<IStudent>
-            IColumns={columns}
-            IData={list!}
-            pagination={{
-                current: +currentPage,
-                pageSize: +pageSize,
-            }}
-            onTableChange={handlePageSizeChange}
-            filter={filter}
-            totalItem={total}
-        />
+        <>
+            {loading ? (
+                <Skeleton avatar paragraph={{ rows: 10 }} />
+            ) : (
+                <TableMemoComponent<IStudent>
+                    IColumns={columns}
+                    IData={list!}
+                    pagination={{
+                        current: +currentPage,
+                        pageSize: +pageSize,
+                    }}
+                    onTableChange={handlePageSizeChange}
+                    filter={filter}
+                    totalItem={total}
+                />
+            )}
+        </>
     );
 });
 
