@@ -1,18 +1,19 @@
 import { DeleteFilled, EditFilled } from '@ant-design/icons';
 import { Button, Modal, Popconfirm, Skeleton, Switch } from 'antd';
 import { ColumnsType } from 'antd/es/table';
+import { PopconfirmCustom } from 'components/custom';
+import { TableMemoComponent } from 'components/custom/TableCustom';
+import { PaginationConfig } from 'const';
 import dayjs from 'dayjs';
+import { useAppDispatch } from 'hooks';
+import { IModal, IPagination } from 'models';
+import { IStudent } from 'models/students.model';
+import { ITask } from 'models/tasks.model';
 import { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { PaginationConfig } from 'src/const';
-import { useAppDispatch } from 'src/hooks';
-import { IModal, IPagination } from 'src/models';
-import { IStudent } from 'src/models/students.model';
-import { ITask } from 'src/models/tasks.model';
-import { taskServices } from 'src/services/features/tasks.services';
-import { notify } from 'src/utils';
-import { PopconfirmCustom } from '~components/custom';
-import { TableMemoComponent } from '~components/custom/TableCustom';
-import { turnOff, turnOn } from '~store/slice/loading.slice';
+import { taskServices } from 'services/features/tasks.services';
+import { turnOff, turnOn } from 'store/slice/loading.slice';
+import { notify } from 'utils';
+
 import TaskFormScene from '../TaskFormScene';
 
 const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {

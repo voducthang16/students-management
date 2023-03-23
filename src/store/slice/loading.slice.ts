@@ -3,6 +3,7 @@ import { RootState } from '..';
 
 const initialState = {
     status: true,
+    sidebar: true,
 };
 
 export const loadingSlice = createSlice({
@@ -15,9 +16,13 @@ export const loadingSlice = createSlice({
         turnOn: (state) => {
             state.status = true;
         },
+        toggleSidebar: (state) => {
+            state.sidebar = !state.sidebar;
+        },
     },
 });
 
-export const { turnOff, turnOn } = loadingSlice.actions;
+export const { turnOff, turnOn, toggleSidebar } = loadingSlice.actions;
 export const status = (state: RootState) => state.loading.status;
+export const sidebar = (state: RootState) => state.loading.sidebar;
 export default loadingSlice.reducer;

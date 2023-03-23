@@ -1,9 +1,9 @@
 import { Table } from 'antd';
 import type { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table';
+import { TablePagination } from 'config/TablePagination';
+import { PaginationConfig } from 'const';
+import { IPagination, ITableData } from 'models';
 import { memo, useMemo } from 'react';
-import { TablePagination } from 'src/config/TablePagination';
-import { PaginationConfig } from 'src/const';
-import { IPagination, ITableData } from 'src/models';
 
 interface ITableCustom<T> extends TableProps<T> {
     IColumns: ColumnsType<T>;

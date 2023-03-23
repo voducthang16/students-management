@@ -15,11 +15,11 @@
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "react-jsx",
-        "baseUrl": ".",
-        "paths": {
-            "~components/*": ["src/components/*"],
-            "~store/*": ["src/store/*"]
-        },
+        "baseUrl": "src",
+        // "paths": {
+        //     "~components/*": ["/components/*"],
+        //     "~store/*": ["/store/*"]
+        // },
         "noImplicitAny": false
     },
     "include": ["src"],

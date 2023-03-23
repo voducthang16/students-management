@@ -1,6 +1,6 @@
-import { IHttpRequest } from 'src/models';
-import { IStudent } from 'src/models/students.model';
-import { queryString } from 'src/utils';
+import { IHttpRequest } from 'models';
+import { IStudent } from 'models/students.model';
+import { queryString } from 'utils';
 import httpRequest from '../core/httpRequest';
 export const studentsService = {
     getAll({ filter }: IHttpRequest) {

@@ -1,6 +1,6 @@
 import { notification } from 'antd';
 import type { ArgsProps } from 'antd/es/notification/interface';
-import { Icons } from '~components/Icons/Icons';
+import { Icons } from 'components/Icons/Icons';
 const success = ({ message, description, duration = 3, placement = 'topRight' }: ArgsProps) => {
     notification.success({
         message,

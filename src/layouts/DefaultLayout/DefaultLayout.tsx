@@ -5,7 +5,7 @@ function DefaultLayout({ children }) {
     return (
         <>
             <Sidebar />
-            <main className="ml-64 bg-[#f3f3f9]">
+            <main className="lg:ml-64 bg-[#f3f3f9]">
                 <Header />
                 <div className="p-4">{children}</div>
                 <Footer />

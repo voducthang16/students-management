@@ -1,8 +1,8 @@
 import { Button } from 'antd';
+import { IModal, IPagination } from 'models';
 import { useRef } from 'react';
-import { IModal, IPagination } from 'src/models';
-import { StudentForm, StudentList, StudentSearch } from 'src/scenes/students';
-import { IStudentListRef } from 'src/scenes/students/StudentList.scene';
+import { StudentForm, StudentList, StudentSearch } from 'scenes/students';
+import { IStudentListRef } from 'scenes/students/StudentList.scene';
 
 function StudentPage() {
     const studentFormRef = useRef<IModal>(null);

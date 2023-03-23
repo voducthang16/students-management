@@ -1,9 +1,10 @@
 import { Form, Input, Modal, Switch } from 'antd';
+import { IModal } from 'models';
+import { ITask } from 'models/tasks.model';
 import { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
-import { IModal } from 'src/models';
-import { ITask } from 'src/models/tasks.model';
-import { taskServices } from 'src/services/features/tasks.services';
-import { notify } from 'src/utils';
+import { taskServices } from 'services/features/tasks.services';
+import { notify } from 'utils';
+
 interface IProps {
     onChange?: (studentId: string) => void;
 }

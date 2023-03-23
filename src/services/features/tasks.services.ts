@@ -1,6 +1,6 @@
-import { IHttpRequest } from 'src/models';
-import { ITask } from 'src/models/tasks.model/tasks.model';
-import { queryString } from 'src/utils';
+import { IHttpRequest } from 'models';
+import { ITask } from 'models/tasks.model';
+import { queryString } from 'utils';
 import httpRequest from '../core/httpRequest';
 
 export const taskServices = {

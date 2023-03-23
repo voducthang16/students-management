@@ -1,12 +1,12 @@
 import type { SelectProps } from 'antd';
 import { Form, Input, Modal, Select, Switch } from 'antd';
+import { useAppDispatch } from 'hooks';
+import { IModal } from 'models';
+import { IStudent } from 'models/students.model';
 import { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
-import { useAppDispatch } from 'src/hooks';
-import { IModal } from 'src/models';
-import { IStudent } from 'src/models/students.model';
-import { studentsService } from 'src/services/features';
-import { notify, slugify } from 'src/utils';
-import { turnOff, turnOn } from '~store/slice/loading.slice';
+import { studentsService } from 'services/features';
+import { turnOff, turnOn } from 'store/slice/loading.slice';
+import { notify, slugify } from 'utils';
 
 interface IProps {
     onChange?: () => void;

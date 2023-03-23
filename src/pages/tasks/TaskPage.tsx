@@ -1,6 +1,6 @@
+import { IModal } from 'models';
 import { useRef } from 'react';
-import { IModal } from 'src/models';
-import TaskFormScene from 'src/scenes/tasks/TaskFormScene';
+import TaskFormScene from 'scenes/tasks/TaskFormScene';
 
 function TaskPage() {
     const taskFormScene = useRef<IModal>(null);

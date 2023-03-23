@@ -1,8 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IStudent, IStudentList } from 'src/models/students.model';
-import { RootState, AppThunk } from '~store/index';
-import { studentsService } from 'src/services/features';
-import { IPagination } from 'src/models';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { IPagination } from 'models';
+import { IStudentList } from 'models/students.model';
+import { studentsService } from 'services/features';
+import { RootState } from 'store';
 
 const initialState: IStudentList = {
     list: [],

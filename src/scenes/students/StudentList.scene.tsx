@@ -1,7 +1,13 @@
 import { DeleteFilled, EditFilled, PlusCircleFilled } from '@ant-design/icons';
 import { Button, Image, Popconfirm, Skeleton, Switch, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import { PopconfirmCustom } from 'components/custom';
+import { TableMemoComponent } from 'components/custom/TableCustom';
+import { PaginationConfig } from 'const';
 import dayjs from 'dayjs';
+import { useAppDispatch } from 'hooks';
+import { IModal, IPagination } from 'models';
+import { IStudent } from 'models/students.model';
 import {
     ForwardedRef,
     forwardRef,
@@ -13,17 +19,11 @@ import {
     useState,
 } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { PaginationConfig } from 'src/const';
-import { useAppDispatch } from 'src/hooks';
-import { IModal, IPagination } from 'src/models';
-import { IStudent } from 'src/models/students.model';
-import TaskFormScene from 'src/scenes/tasks/TaskFormScene';
-import TaskStudentListScene from 'src/scenes/tasks/TaskStudentListScene';
-import { studentsService } from 'src/services/features';
-import { notify, queryString } from 'src/utils';
-import { PopconfirmCustom } from '~components/custom';
-import { TableMemoComponent } from '~components/custom/TableCustom';
-import { turnOff, turnOn } from '~store/slice/loading.slice';
+import TaskFormScene from 'scenes/tasks/TaskFormScene';
+import TaskStudentListScene from 'scenes/tasks/TaskStudentListScene';
+import { studentsService } from 'services/features';
+import { turnOff, turnOn } from 'store/slice/loading.slice';
+import { notify, queryString } from 'utils';
 import { StudentForm } from '.';
 
 export interface IStudentListRef {
@@ -180,14 +180,14 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
     const columns: ColumnsType<IStudent> = useMemo(() => {
         return [
             {
-                title: 'Name',
+                title: <h6 className="text-center text-base font-mono font-light">Name</h6>,
                 dataIndex: 'name',
                 key: 'name',
                 render: (text) => <>{text}</>,
                 fixed: 'left',
             },
             {
-                title: 'Avatar',
+                title: <h6 className="text-center text-base font-mono font-light">Avatar</h6>,
                 dataIndex: 'avatar',
                 key: 'avatar',
                 render: (text) => (
@@ -201,22 +201,22 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                 ),
             },
             {
-                title: 'Email',
+                title: <h6 className="text-center text-base font-mono font-light">Email</h6>,
                 dataIndex: 'email',
                 key: 'email',
                 render: (text) => <>{text.toLocaleLowerCase()}</>,
             },
             {
-                title: 'Age',
+                title: <h6 className="text-center text-base font-mono font-light">Age</h6>,
                 dataIndex: 'age',
                 key: 'age',
-                width: '60px',
+                width: 60,
             },
             {
-                title: 'Hobbies',
+                title: <h6 className="text-center text-base font-mono font-light">Hobbies</h6>,
                 dataIndex: 'hobbies',
                 key: 'hobbies',
-                width: '90px',
+                width: 90,
                 render: (_, { hobbies }) => (
                     <div className="space-y-2">
                         {hobbies.map((hobby) => (
@@ -228,7 +228,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                 ),
             },
             {
-                title: 'Sex',
+                title: <h6 className="text-center text-base font-mono font-light">Sex</h6>,
                 key: 'sex',
                 dataIndex: 'sex',
                 render: (_, record) => (
@@ -247,7 +247,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                 ),
             },
             {
-                title: 'Points',
+                title: <h6 className="text-center text-base font-mono font-light">Points</h6>,
                 key: 'points',
                 dataIndex: 'points',
                 width: 60,
@@ -260,7 +260,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                 ),
             },
             {
-                title: 'Tasks',
+                title: <h6 className="text-center text-base font-mono font-light">Tasks</h6>,
                 key: 'tasks',
                 dataIndex: 'tasks',
                 width: 60,
@@ -280,25 +280,29 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                 ),
             },
             {
-                title: 'Date Created',
+                title: <h6 className="text-center text-base font-mono font-light">Date Created</h6>,
                 key: 'date created',
                 dataIndex: 'date created',
+                width: 140,
                 render: (_, { createdAt }) => dayjs(createdAt).format('DD-MM-YYYY'),
             },
             {
-                title: 'Date Updated',
+                title: <h6 className="text-center text-base font-mono font-light">Date Updated</h6>,
                 key: 'date updated',
                 dataIndex: 'date updated',
+                width: 145,
                 render: (_, { updatedAt }) => dayjs(updatedAt).format('DD-MM-YYYY'),
             },
             {
-                title: 'Actions',
+                title: <h6 className="text-center text-base font-mono font-light">Actions</h6>,
                 dataIndex: 'actions',
                 key: 'actions',
+                width: 100,
                 render: (_, record) => (
-                    <div className="flex">
+                    <div className="flex space-x-1">
                         <div title="Edit User">
                             <Button
+                                className="px-0"
                                 type="ghost"
                                 onClick={() => {
                                     showStudentModal(record);
@@ -311,6 +315,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                         </div>
                         <div title="Add Task">
                             <Button
+                                className="px-0"
                                 type="ghost"
                                 onClick={() => {
                                     showTaskModal(record);
@@ -328,7 +333,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                                     handleDeleteStudent(record.id);
                                 }}
                             >
-                                <Button type="ghost">
+                                <Button className="px-0" type="ghost">
                                     <DeleteFilled className="text-lg cursor-pointer hover:opacity-80 transition-all" />
                                 </Button>
                             </PopconfirmCustom>
