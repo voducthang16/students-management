@@ -209,6 +209,7 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                 title: 'Age',
                 dataIndex: 'age',
                 key: 'age',
+                width: '60px',
             },
             {
                 title: 'Hobbies',

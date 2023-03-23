@@ -42,7 +42,7 @@ function TableCustom<T extends ITableData>({
                     const offset = (page - 1) * pageSize;
                 },
             }}
-            scroll={{ x: 'max-content' }}
+            scroll={{ x: 'max-content', y: '400px' }}
         />
     );
 }
