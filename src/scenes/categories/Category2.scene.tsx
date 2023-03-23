@@ -1,4 +1,4 @@
-import SearchCommon from '~components/Inputs/SearchCommon.component';
+import SearchCommon from 'components/Inputs/SearchCommon.component';
 
 function Category2Scene() {
     return (

@@ -1,6 +1,5 @@
-import React from 'react';
-import Category1Scene from 'src/scenes/categories/Category1.scene';
-import Category2Scene from 'src/scenes/categories/Category2.scene';
+import Category1Scene from 'scenes/categories/Category1.scene';
+import Category2Scene from 'scenes/categories/Category2.scene';
 
 function CategoryPage() {
     return (

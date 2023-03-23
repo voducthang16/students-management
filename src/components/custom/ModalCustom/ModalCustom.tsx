@@ -1,6 +1,6 @@
-import { useState, forwardRef, ForwardedRef, useImperativeHandle } from 'react';
 import { Form, Modal } from 'antd';
-import { IModal } from 'src/models';
+import { IModal } from 'models';
+import { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
 
 interface IModalCustom {
     title: string;

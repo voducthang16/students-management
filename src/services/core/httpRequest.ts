@@ -1,4 +1,4 @@
-import { IHttpRequest, NewResponse } from 'src/models';
+import { IHttpRequest, NewResponse } from 'models';
 import instance from './instance';
 
 const get = <Type>({ url, payload, headers }: IHttpRequest) => {

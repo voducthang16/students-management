@@ -1,7 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
+import { IPagination } from 'models';
 import { forwardRef, useImperativeHandle, useState } from 'react';
-import { IPagination } from 'src/models';
 
 interface ISearch {
     onChange: (param: IPagination) => void;

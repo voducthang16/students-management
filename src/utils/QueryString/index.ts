@@ -1,4 +1,4 @@
-import { IHttpRequest } from 'src/models';
+import { IHttpRequest } from 'models';
 
 export const queryString = ({ filter }: IHttpRequest) => {
     if (typeof filter === 'string') {
