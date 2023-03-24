@@ -1,7 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import { GoogleLoginButton } from 'react-social-login-buttons';
 import { LoginSocialGoogle } from 'reactjs-social-login';
 import { localStorageMethod } from 'utils';
 function Login() {
+    const navigate = useNavigate();
     return (
         <div className="h-screen bg-blue-300 flex items-center justify-center">
             <div className="w-60">
@@ -9,6 +11,7 @@ function Login() {
                     client_id="537267212246-aaelv3v3j40f6au9km4hgqffcju14nga.apps.googleusercontent.com"
                     onResolve={({ provider, data }) => {
                         localStorageMethod.set('login', data!);
+                        navigate('/');
                     }}
                     onReject={(error) => {
                         console.log(error);

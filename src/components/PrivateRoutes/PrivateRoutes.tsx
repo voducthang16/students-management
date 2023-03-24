@@ -3,7 +3,6 @@ import { localStorageMethod } from 'utils';
 
 function PrivateRoutes() {
     const isLoggedIn = Boolean(localStorageMethod.get('login'));
-    console.log(isLoggedIn);
     return isLoggedIn ? <Outlet /> : <Navigate to={'/login'} />;
 }
 
