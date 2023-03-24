@@ -358,8 +358,8 @@ const StudentList = forwardRef((props: IStudentProps, ref: ForwardedRef<IStudent
                 <Skeleton avatar paragraph={{ rows: 10 }} />
             ) : (
                 <TableMemoComponent<IStudent>
-                    IColumns={columns}
-                    IData={list!}
+                    columns={columns}
+                    dataSource={list!}
                     pagination={{
                         current: +currentPage,
                         pageSize: +pageSize,

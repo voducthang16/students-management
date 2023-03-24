@@ -214,8 +214,8 @@ const TaskStudentListScene = forwardRef((props, ref: ForwardedRef<IModal>) => {
                 <Skeleton avatar paragraph={{ rows: 5 }} />
             ) : (
                 <TableMemoComponent<ITask>
-                    IColumns={columns}
-                    IData={taskList!}
+                    columns={columns}
+                    dataSource={taskList!}
                     pagination={{
                         pageSize: pageSize,
                     }}
